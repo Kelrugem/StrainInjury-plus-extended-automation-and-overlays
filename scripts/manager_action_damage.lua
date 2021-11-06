@@ -1183,6 +1183,7 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFor
 		-- KEL bypass stuff
 		local bypass = false; 
 		local drbypass = false;
+		local resisthalved = false;
 		-- GET THE INDIVIDUAL DAMAGE TYPES FOR THIS ENTRY (EXCLUDING UNTYPED DAMAGE TYPE)
 		local aSrcDmgClauseTypes = {};
 		local bHasEnergyType = false;
@@ -1226,6 +1227,13 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFor
 					bypass = true;
 				elseif (sDmgType == "drbypass") then
 					drbypass = true;
+				elseif (sDmgType == "resisthalved") then
+					resisthalved = true;
+				end
+			end
+			if resisthalved then
+				for _,sResist in pairs(aResist) do
+					sResist.mod = math.floor(sResist.mod / 2);
 				end
 			end
 			local bHResist = false;
