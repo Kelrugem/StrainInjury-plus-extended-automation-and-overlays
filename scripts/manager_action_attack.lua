@@ -250,7 +250,7 @@ function modAttack(rSource, rTarget, rRoll)
 		end
 	end
 	-- KEL adding uncanny dodge
-	if bFlatFooted and not ActorManager35E.hasSpecialAbility(rTarget, "Uncanny Dodge", false, false, true) and not ActorManager35E.hasSpecialAbility(rTarget, "Improved Uncanny Dodge", false, false, true) then
+	if bFlatFooted and not ActorManager35E.hasSpecialAbility(rTarget, "Uncanny Dodge", false, false, true) then
 		table.insert(aAddDesc, "[FF]");
 	end
 	if bSuperiorCover then
