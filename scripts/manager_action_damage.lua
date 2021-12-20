@@ -354,7 +354,7 @@ function onDamageRoll(rSource, rRoll)
 	end
 	
 	-- Decode damage types
-	decodeDamageTypes(rRoll, true);
+	ActionDamage.decodeDamageTypes(rRoll, true);
 
 	-- Apply empower meta damage
 	if bEmpower then
@@ -401,7 +401,7 @@ function onDamageRoll(rSource, rRoll)
 	end
 	
 	-- Encode the damage results for damage application and readability
-	encodeDamageText(rRoll);
+	ActionDamage.encodeDamageText(rRoll);
 end
 -- KEL TDMG
 function notifyTDMGRollOnClient(msgOOB)
@@ -1172,9 +1172,14 @@ end
 function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFortif, tags)
 	-- SETUP
 	local nDamageAdjust = 0;
+	-- KEL REVERT
+	local nRevert = 0;
+	-- END
 	local nNonlethal = 0;
 	local bVulnerable = false;
 	local bResist = false;
+	-- KEL for adding REVERT chat message
+	local bRevert = false;
 	local aWords;
 	local bPFMode = DataCommon.isPFRPG();
 	-- KEL
@@ -1184,14 +1189,19 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFor
 	-- GET THE DAMAGE ADJUSTMENT EFFECTS
 	local aVuln = EffectManager35E.getEffectsBonusByType(rTarget, "VULN", false, {}, rSource, false, tags);
 	local aResist = EffectManager35E.getEffectsBonusByType(rTarget, "RESIST", false, {}, rSource, false, tags);
-	-- KEL Adding HRESIST
+	-- KEL Adding HRESIST and REVERT
 	local aHResist = EffectManager35E.getEffectsBonusByType(rTarget, "HRESIST", false, {}, rSource, false, tags);
+	local aRevert = EffectManager35E.getEffectsBonusByType(rTarget, "REVERT", false, {}, rSource, false, tags);
 	local aDR = EffectManager35E.getEffectsByType(rTarget, "DR", {}, rSource, false, tags);
-	-- KEL critical immunity (PFMode) for incorporeal already checked earlier
+	-- KEL critical immunity (PFMode) for incorporeal already checked earlier; reverted heal check
 	local bApplyIncorporeal = false;
 	local bSourceIncorporeal = false;
+	local bRevHeal = false;
 	if string.match(rDamageOutput.sOriginal, "%[INCORPOREAL%]") then
 		bSourceIncorporeal = true;
+	end
+	if string.match(rDamageOutput.sOriginal, "%[REV%]") then
+		bRevHeal = true;
 	end
 	local bTargetIncorporeal = EffectManager35E.hasEffect(rTarget, "Incorporeal", nil, false, false, tags);
 	if bTargetIncorporeal and not bSourceIncorporeal then
@@ -1199,8 +1209,9 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFor
 	end
 	
 	-- IF IMMUNE ALL, THEN JUST HANDLE IT NOW
+	-- KEL add new output
 	if bImmune["all"] then
-		return (0 - nDamage), 0, false, true;
+		return (0 - nDamage), 0, false, true, false, 0;
 	end
 	
 	-- HANDLE REGENERATION
@@ -1307,8 +1318,9 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFor
 		end
 
 		-- HANDLE IMMUNITY, VULNERABILITY AND RESISTANCE
-		-- KEL Order change; added FORTIF, HRESIST
+		-- KEL Order change; added FORTIF, HRESIST, REVERT
 		local nLocalDamageAdjust = 0;
+		local nLocalRevert = 0;
 		if #aSrcDmgClauseTypes > 0 then
 			-- CHECK FOR IMMUNITY (Must be immune to all damage types in damage source)
 			-- KEL FORTIF, HRESIST, RESIST now work like IMMUNE w.r.t. to damage types (see 3.3.7 patch notes)
@@ -1352,10 +1364,10 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFor
 				bHResist = true;
 			end
 			if bImmune[k] then
-				nLocalDamageAdjust = nLocalDamageAdjust - v;
+				nLocalDamageAdjust = - v;
 				bResist = true;
 			elseif bFortif[k] then
-				nLocalDamageAdjust = nLocalDamageAdjust - v;
+				nLocalDamageAdjust = - v;
 				bResist = true;	
 			else
 			-- KEL For PF VULN before resistances; 3.5e: VULN at the very end
@@ -1542,8 +1554,7 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFor
 				end
 			end
 		end
-		
-		-- KEL going back to the initial if clause
+		-- KEL going back to the initial if clause, also adding REVERT; first check damage type matching, but revert the damage at the very end
 		if #aSrcDmgClauseTypes > 0 then
 			if not bImmune[k] and not bFortif[k] then
 				local MaxResistMod = 0;
@@ -1551,12 +1562,16 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFor
 				local nSpecialDmgTypes = 0;
 				local nBasicDmgTypeMatchesResist = 0;
 				local nSpecialDmgTypeMatchesResist = 0;
+				local nBasicDmgTypeMatchesRevert = 0;
+				local nSpecialDmgTypeMatchesRevert = 0;
 				for _,sDmgType in pairs(aSrcDmgClauseTypes) do
 					if StringManager.contains(DataCommon.basicdmgtypes, sDmgType) then
 						if aResist[sDmgType] then nBasicDmgTypeMatchesResist = nBasicDmgTypeMatchesResist + 1; end
+						if aRevert[sDmgType] then nBasicDmgTypeMatchesRevert = nBasicDmgTypeMatchesRevert + 1; end
 					else
 						nSpecialDmgTypes = nSpecialDmgTypes + 1;
 						if aResist[sDmgType] then nSpecialDmgTypeMatchesResist = nSpecialDmgTypeMatchesResist + 1; end
+						if aRevert[sDmgType] then nSpecialDmgTypeMatchesRevert = nSpecialDmgTypeMatchesRevert + 1; end
 					end
 				end
 				local cResist = false;
@@ -1713,6 +1728,28 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFor
 						end
 					end
 				end
+				
+				-- KEL REVERT
+				if not bRevHeal then
+					if aRevert["all"] then
+						nLocalRevert = nLocalRevert + v + nLocalDamageAdjust;
+						nLocalDamageAdjust = - v;
+					else
+						local bRevert = false;
+						if (nSpecialDmgTypeMatchesRevert > 0) then
+							bRevert = true;
+						elseif (nBasicDmgTypeMatchesRevert > 0) and (nBasicDmgTypeMatchesRevert + nSpecialDmgTypes) == #aSrcDmgClauseTypes then
+							bRevert = true;
+						end
+						for _,sDmgType in pairs(aSrcDmgClauseTypes) do
+							if aRevert[sDmgType] and bRevert then
+								nLocalRevert = nLocalRevert + v + nLocalDamageAdjust;
+								nLocalDamageAdjust = - v;
+							end
+						end
+					end
+				end
+				-- END
 			end
 			
 			-- CALCULATE NONLETHAL DAMAGE
@@ -1732,13 +1769,16 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFor
 
 			-- APPLY DAMAGE ADJUSTMENT FROM THIS DAMAGE CLAUSE TO OVERALL DAMAGE ADJUSTMENT
 			nDamageAdjust = nDamageAdjust + nLocalDamageAdjust - nNonlethalAdjust;
+			-- KEL Tracking reverted damage
+			nRevert = nRevert + nLocalRevert;
+			-- END
 			nNonlethal = nNonlethal + nNonlethalAdjust;
 		end
 	end
 
 	-- RESULTS
-	-- KEL add injury
-	return nDamageAdjust, nNonlethal, bVulnerable, bResist, aInjury;
+	-- KEL add injury and revert chat adjustment
+	return nDamageAdjust, nNonlethal, bVulnerable, bResist, aInjury, nRevert;
 	-- END
 end
 -- KEL Too lazy to make strings manually to boolean variables :P
@@ -2054,12 +2094,27 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 
 	-- Healing
 	if rDamageOutput.sType == "heal" or rDamageOutput.sType == "fheal" then
+		-- KEL REVERT
+		local nHealAmount = rDamageOutput.nVal;
+		if rDamageOutput.sType == "heal" and not sDamage:match("%[REV%]") then
+			local aRevert = EffectManager35E.getEffectsBonusByType(rTarget, "REVERT", false, {}, rSource, false, tags);
+			if aRevert["positive"] then
+				local rRoll = {};
+				rRoll.sType = "damage";
+				rRoll.aDice = {};
+				rRoll.nMod = nHealAmount;
+				rRoll.sDesc = "[DAMAGE] [REV] Reverted Heal";
+				ActionsManager.roll(nil, rTarget, rRoll);
+				
+				nHealAmount = 0;
+			end
+		end
+		--END
 		-- CHECK COST
 		if nInjury <= 0 and nWounds <= 0 then
 			table.insert(rDamageOutput.tNotifications, "[NOT WOUNDED]");
 		else
 			-- CALCULATE HEAL AMOUNTS
-			local nHealAmount = rDamageOutput.nVal;
 			local nOriginalWounds = nWounds;
 			local nOriginalInjury = nInjury;
 
@@ -2150,18 +2205,28 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 		end
 		
 		-- Apply damage type adjustments
-		-- KEL bImmune, bFortif, tags
+		-- KEL bImmune, bFortif, tags, bRevert
 		-- KEL Adding Injury information
-		local nDamageAdjust, nNonlethalDmgAmount, bVulnerable, bResist, aInjury = ActionDamage.getDamageAdjust(rSource, rTarget, rDamageOutput.nVal, rDamageOutput, bImmune, bFortif, tags);
+		local nDamageAdjust, nNonlethalDmgAmount, bVulnerable, bResist, aInjury, nRevert = ActionDamage.getDamageAdjust(rSource, rTarget, rDamageOutput.nVal, rDamageOutput, bImmune, bFortif, tags);
 		if aInjury then
 			rDamageOutput.bInjury = aInjury;
 		end
 		-- END
 		local nAdjustedDamage = rDamageOutput.nVal + nDamageAdjust;
+		-- KEL adding revert. If revert leads to negative damage, then apply heal instead
+		if nRevert > 0 then
+			local rRoll = {};
+			rRoll.sType = "heal";
+			rRoll.aDice = {};
+			rRoll.nMod = nRevert;
+			rRoll.sDesc = "[HEAL] [REV] Reverted Damage";
+			ActionsManager.roll(nil, rTarget, rRoll);
+		end
 		if nAdjustedDamage < 0 then
 			nAdjustedDamage = 0;
 		end
-		if bResist then
+		if bResist or nRevert > 0 then
+		-- END
 			if nAdjustedDamage <= 0 then
 				table.insert(rDamageOutput.tNotifications, "[RESISTED]");
 			else
@@ -2171,6 +2236,11 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 		if bVulnerable then
 			table.insert(rDamageOutput.tNotifications, "[VULNERABLE]");
 		end
+		-- KEL Revert chat message
+		if bRevert then
+			table.insert(rDamageOutput.tNotifications, "[REVERTED]");
+		end
+		-- END
 		
 		-- Reduce damage by temporary hit points
 		if nTempHP > 0 and nAdjustedDamage > 0 then
