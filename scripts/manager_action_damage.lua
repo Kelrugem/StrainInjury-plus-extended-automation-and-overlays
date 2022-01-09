@@ -148,17 +148,11 @@ function handleApplyDamage(msgOOB)
 				-- local FortifApplied = false;
 				if bSFortif[k] and not aFortif["all"] and not bSImmune[k] and not aImmune["all"] then
 					table.insert(bDice, "d100");
-					if not UtilityManager.isClientFGU() then
-						table.insert(bDice, "d10");
-					end
 					isFortif = true;
 					-- FortifApplied = true;
 				end
 				if aFortif["all"] and not aImmune["all"] and not bSImmune[k] then
 					table.insert(bDice, "d100");
-					if not UtilityManager.isClientFGU() then
-						table.insert(bDice, "d10");
-					end
 					isFortif = true;
 					MaxFortifMod[k] = math.max(MaxFortifMod[k], aFortif["all"].mod);
 				end
@@ -193,6 +187,17 @@ function handleApplyDamage(msgOOB)
 					aRollFortif.FortifAll = tostring(bSFortif["all"]);
 					aRollFortif[k] = tostring(bSImmune[k]);
 					aRollFortif[l] = tostring(bSFortif[k]);
+					local aVSFortifEffect, aVSFortifCount = EffectManager35E.getEffectsBonusByType(rSource, "VSFORTIF", true, nil, rTarget, false, msgOOB.tags);
+					if aVSFortifCount > 0 then
+						local LowerFortif = 0;
+						for _,v in  pairs(aVSFortifEffect) do
+							LowerFortif = math.max(v.mod,LowerFortif);
+						end
+						MaxFortifMod[k] = MaxFortifMod[k] - LowerFortif;
+						if MaxFortifMod[k] <= 0 then
+							MaxFortifMod[k] = 0;
+						end
+					end
 					aRollFortif[m] = MaxFortifMod[k];
 				end
 			end
@@ -260,13 +265,14 @@ function performStabilizationRoll(rActor)
 
 	ActionsManager.performAction(nil, rActor, rRoll);
 end
-
-function getRoll(rActor, rAction)
+-- KEL adding tags
+function getRoll(rActor, rAction, tag)
 	local rRoll = {};
 	rRoll.sType = "damage";
 	rRoll.aDice = {};
 	rRoll.nMod = 0;
-	
+	rRoll.tags = tag;
+-- END	
 	rRoll.sDesc = "[DAMAGE";
 	if rAction.order and rAction.order > 1 then
 		rRoll.sDesc = rRoll.sDesc .. " #" .. rAction.order;
@@ -541,7 +547,7 @@ function setupModRoll(rRoll, rSource, rTarget)
 
 	rRoll.tNotifications = {};
 	
-	rRoll.bCritical = rRoll.bCritical or ModifierStack.getModifierKey("DMG_CRIT") or Input.isShiftPressed();
+	rRoll.bCritical = rRoll.bCritical or ModifierManager.getKey("DMG_CRIT") or Input.isShiftPressed();
 	if ActionAttack.isCrit(rSource, rTarget) then
 		rRoll.bCritical = true;
 	end
@@ -551,6 +557,12 @@ function setupModRoll(rRoll, rSource, rTarget)
 	elseif rRoll.range == "M" then
 		table.insert(rRoll.tAttackFilter, "melee");
 	end
+	-- KEl adding precision handle
+	if ModifierManager.getKey("DMG_ACCURACY") or Input.isControlPressed() then
+		table.insert(rRoll.tAttackFilter, "accuracy");
+		table.insert(rRoll.tNotifications, "[ACCURACY]");
+	end
+	-- END
 
 	rRoll.bEffects = false;
 	rRoll.tEffectDice = {};
@@ -801,12 +813,20 @@ function applyDmgTypeEffectsToModRoll(rRoll, rSource, rTarget)
 end
 
 function applyModifierKeysToModRoll(rRoll, rSource, rTarget)
-	if ModifierStack.getModifierKey("DMG_HALF") then
+	if ModifierManager.getKey("DMG_HALF") then
 		table.insert(rRoll.tNotifications, "[HALF]");
 	end
 	-- KEL Injury damage button
-    if ModifierStack.getModifierKey("DMG_INJURY") then
+    if ModifierManager.getKey("DMG_INJURY") then
         table.insert(rRoll.tNotifications, "[INJURY]");
+		
+		for _,vClause in ipairs(rRoll.clauses) do
+			if vClause.dmgtype == "" then
+				vClause.dmgtype = "injury";
+			else
+				vClause.dmgtype = vClause.dmgtype .. ",injury";
+			end
+		end
     end
 	-- END
 end
@@ -1730,7 +1750,7 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFor
 				end
 				
 				-- KEL REVERT
-				if not bRevHeal then
+				if not bRevHeal and not bRevApplied then
 					if aRevert["all"] then
 						nLocalRevert = nLocalRevert + v + nLocalDamageAdjust;
 						nLocalDamageAdjust = - v;
@@ -1741,10 +1761,15 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFor
 						elseif (nBasicDmgTypeMatchesRevert > 0) and (nBasicDmgTypeMatchesRevert + nSpecialDmgTypes) == #aSrcDmgClauseTypes then
 							bRevert = true;
 						end
+						
+						local bRevApplied = false;
 						for _,sDmgType in pairs(aSrcDmgClauseTypes) do
-							if aRevert[sDmgType] and bRevert then
-								nLocalRevert = nLocalRevert + v + nLocalDamageAdjust;
-								nLocalDamageAdjust = - v;
+							if not bRevApplied then
+								if aRevert[sDmgType] and bRevert then
+									nLocalRevert = nLocalRevert + v + nLocalDamageAdjust;
+									nLocalDamageAdjust = - v;
+									bRevApplied = true;
+								end
 							end
 						end
 					end
@@ -2061,7 +2086,10 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 	local bPFMode = DataCommon.isPFRPG();
 
 	local bRemoveTarget = false;
-	
+	-- KEL defining reverted rolls
+	local rRollHeal = {};
+	local rRollDamage = {};
+	-- END
 	-- Get health fields
 	local sTargetNodeType, nodeTarget = ActorManager.getTypeAndNode(rTarget);
 	if not nodeTarget then
@@ -2098,21 +2126,24 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 		local nHealAmount = rDamageOutput.nVal;
 		if rDamageOutput.sType == "heal" and not sDamage:match("%[REV%]") then
 			local aRevert = EffectManager35E.getEffectsBonusByType(rTarget, "REVERT", false, {}, rSource, false, tags);
-			if aRevert["positive"] then
-				local rRoll = {};
-				rRoll.sType = "damage";
-				rRoll.aDice = {};
-				rRoll.nMod = nHealAmount;
-				rRoll.sDesc = "[DAMAGE] [REV] Reverted Heal";
-				ActionsManager.roll(nil, rTarget, rRoll);
-				
+			if aRevert["positive"] or aRevert["all"] then
+				rRollHeal.sType = "damage";
+				rRollHeal.aDice = {nil, {result = 0}};
+				rRollHeal.nMod = nHealAmount;
+				rRollHeal.sDesc = "[DAMAGE] [REV] Reverted Heal [TYPE: positive]";
+				rRollHeal.clauses = { dice = { }, dmgtype = "positive", modifier = nHealAmount };
+				rRollHeal.tags = tags;
 				nHealAmount = 0;
+				encodeDamageTypes(rRollHeal);
+				table.insert(rDamageOutput.tNotifications, "[REVERTED]");
 			end
 		end
 		--END
 		-- CHECK COST
-		if nInjury <= 0 and nWounds <= 0 then
+		-- KEL small clean-up in case of no wounds (to avoid confusing text)
+		if nInjury <= 0 and nWounds <= 0 and nHealAmount > 0 then
 			table.insert(rDamageOutput.tNotifications, "[NOT WOUNDED]");
+		-- END
 		else
 			-- CALCULATE HEAL AMOUNTS
 			local nOriginalWounds = nWounds;
@@ -2215,12 +2246,13 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 		local nAdjustedDamage = rDamageOutput.nVal + nDamageAdjust;
 		-- KEL adding revert. If revert leads to negative damage, then apply heal instead
 		if nRevert > 0 then
-			local rRoll = {};
-			rRoll.sType = "heal";
-			rRoll.aDice = {};
-			rRoll.nMod = nRevert;
-			rRoll.sDesc = "[HEAL] [REV] Reverted Damage";
-			ActionsManager.roll(nil, rTarget, rRoll);
+			rRollDamage.sType = "heal";
+			rRollDamage.aDice = {nil, {result = 0}};
+			rRollDamage.nMod = nRevert;
+			rRollDamage.sDesc = "[HEAL] [REV] Reverted Damage";
+			rRollDamage.clauses = { dice = { }, dmgtype = "", modifier = nRevert };
+			rRollDamage.tags = tags;
+			ActionHeal.encodeHealClauses(rRollDamage);
 		end
 		if nAdjustedDamage < 0 then
 			nAdjustedDamage = 0;
@@ -2236,11 +2268,6 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 		if bVulnerable then
 			table.insert(rDamageOutput.tNotifications, "[VULNERABLE]");
 		end
-		-- KEL Revert chat message
-		if bRevert then
-			table.insert(rDamageOutput.tNotifications, "[REVERTED]");
-		end
-		-- END
 		
 		-- Reduce damage by temporary hit points
 		if nTempHP > 0 and nAdjustedDamage > 0 then
@@ -2394,6 +2421,15 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 	
 	-- Output results
 	messageDamage(rSource, rTarget, bSecret, rDamageOutput.sTypeOutput, sDamage, rDamageOutput.sVal, table.concat(rDamageOutput.tNotifications, " "));
+
+	-- KEL rolling reverted rolls; important due to DB readings of the HP: Put this to the end here
+	if rRollHeal.nMod and ( rRollHeal.nMod > 0 ) then
+		ActionDamage.onDamage(rSource, rTarget, rRollHeal);
+	end
+	if rRollDamage.nMod and ( rRollDamage.nMod > 0 ) then
+		ActionDamage.onDamage(rSource, rTarget, rRollDamage);
+	end
+	-- END
 
 	-- Remove target after applying damage
 	if bRemoveTarget and rSource and rTarget then

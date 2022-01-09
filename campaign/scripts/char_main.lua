@@ -47,7 +47,9 @@ end
 
 function onHealthChanged()
 	local sColor = ActorManager35E.getPCSheetWoundColor(getDatabaseNode());
+	-- KEL
     injury.setColor(sColor);
+	-- END
 	wounds.setColor(sColor);
 end
 
