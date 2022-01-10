@@ -12,34 +12,6 @@ function onInit()
 	GameSystem.performConcentrationCheck = GameSystem2.performConcentrationCheck;
 end
 
--- actions = {
-	-- ["dice"] = { bUseModStack = true },
-	-- ["table"] = { },
-	-- ["effect"] = { sIcon = "action_effect", sTargeting = "all" },
-	-- ["attack"] = { sIcon = "action_attack", sTargeting = "each", bUseModStack = true },
-	-- ["grapple"] = { sIcon = "action_attack", sTargeting = "each", bUseModStack = true },
-	-- ["damage"] = { sIcon = "action_damage", sTargeting = "each", bUseModStack = true },
-	-- ["heal"] = { sIcon = "action_heal", sTargeting = "all", bUseModStack = true },
-	-- ["cast"] = { sTargeting = "each" },
-	-- ["castclc"] = { sTargeting = "each" },
-	-- ["castsave"] = { sTargeting = "each" },
-	-- ["clc"] = { sTargeting = "each", bUseModStack = true },
-	-- ["spellsave"] = { sTargeting = "each" },
-	-- ["spdamage"] = { sIcon = "action_damage", sTargeting = "all", bUseModStack = true },
-	-- ["skill"] = { bUseModStack = true },
-	-- ["init"] = { bUseModStack = true },
-	-- ["save"] = { bUseModStack = true },
-	-- ["ability"] = { bUseModStack = true },
-	-- PF SPECIFIC
-	-- ["concentration"] = { bUseModStack = true },
-	-- TRIGGERED
-	-- ["critconfirm"] = { sIcon = "action_attack" },
-	-- ["misschance"] = { },
-	-- ["stabilization"] = { },
-	-- KEL fortification
-	-- ["fortification"] = { },
--- };
-
 function performConcentrationCheck(draginfo, rActor, nodeSpellClass)
 	if DataCommon.isPFRPG() then
 		local rRoll = { sType = "concentration", sDesc = "[CONCENTRATION]", aDice = { "d20" } };
@@ -151,9 +123,6 @@ function getStabilizationRoll(rActor)
 	
 	else
 		rRoll.aDice = { "d100" };
-		if not UtilityManager.isClientFGU() then
-			table.insert(rRoll.aDice, "d10");
-		end
 		rRoll.nMod = 0;
 	end
 	
