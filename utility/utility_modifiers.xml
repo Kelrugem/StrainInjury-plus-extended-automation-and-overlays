@@ -6,12 +6,9 @@
 -->
 
 <root>
-	<windowclass name="modifiers" merge="join">
-		<sheetdata>			
-            <button_modifierkey name="DMG_INJURY" insertbefore="DEF_PCOVER">
-                <bounds>35,300,75,20</bounds>
-                <textres>modifier_label_dmginjury</textres>
-            </button_modifierkey>
-		</sheetdata>
-	</windowclass>
+	<string name="modifier_label_DMG_INJURY">Injury</string>
+	<string name="modifier_label_DMG_ACCURACY">Accuracy</string>
+	<string name="modifier_category_general">General</string>
+	<string name="modifier_label_ADV">Advantage</string>
+	<string name="modifier_label_DISADV">Disadvantage</string>
 </root>

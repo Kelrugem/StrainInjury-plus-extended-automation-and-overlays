@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<root version="3.3.15.1" release="1">
+<root version="4.1.13.1" release="1">
 	<properties>
 		<name>Feature: StrainInjury plus extended automation and overlays</name>
 		<version>3.3.15.1</version>
-		<author>rhythmist, mr900rr, darrenan, tahl_liadon, bmos, DCrumb, RabidPaladin and Kelrugem</author>
+		<author>rhythmist, mr900rr, darrenan, tahl_liadon, bmos, DCrumb, RabidPaladin, SoxMax, Cristmo and Kelrugem</author>
 		<description>Adds support for the Strain and Injury HP Variant rules and more to the 3.5E and PFRPG rulesets.</description>
 		<ruleset>
 		  <name>3.5E</name>
@@ -13,8 +13,9 @@
 		</ruleset>
 		<loadorder>36</loadorder>
 	</properties>
-	<announcement text="Strain and Injury HP Variant Rules v3.3.15.1 and more for FG v3.3.15 3.5E and PFRPG rulesets.\rCopyright 2021 Smiteworks.\rBy darrenan, mr900rr, phixation, tahl_liadon, bmos, DCrumb and Kelrugem." font="chatfont" />
+	<announcement text="Strain and Injury HP Variant Rules, dated at 9 January 2022, and more for FG v4.1.13 3.5E and PFRPG rulesets. Copyright 2022 Smiteworks.\rBy darrenan, mr900rr, phixation, tahl_liadon, bmos, DCrumb, RabidPaladin, SoxMax, Cristmo and Kelrugem." icon="DeekinMightyBard" font="emotefont" />
 	<base>
+		<icon name="DeekinMightyBard" file="DeekinMightyBard.jpg" />
 		<!-- Graphics -->
 		<includefile source="graphics/graphics_icons.xml" />
 		
