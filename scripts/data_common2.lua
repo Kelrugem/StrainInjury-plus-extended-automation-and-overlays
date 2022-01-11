@@ -128,6 +128,8 @@ function onInit()
 	table.insert(DataCommon.immunetypes, "injury");
 	table.insert(DataCommon.dmgtypes, "immunebypass");
 	table.insert(DataCommon.specialdmgtypes, "immunebypass");
+	table.insert(DataCommon.dmgtypes, "vorpal");
+	table.insert(DataCommon.specialdmgtypes, "vorpal");
 	table.insert(DataCommon.dmgtypes, "resistbypass");
 	table.insert(DataCommon.specialdmgtypes, "resistbypass");
 	table.insert(DataCommon.dmgtypes, "resisthalved");
