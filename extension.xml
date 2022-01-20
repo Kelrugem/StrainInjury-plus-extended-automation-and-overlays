@@ -2,7 +2,7 @@
 <root version="4.1.13.1" release="1">
 	<properties>
 		<name>Feature: StrainInjury plus extended automation and overlays</name>
-		<version>3.3.15.1</version>
+		<version>4.1.13.1</version>
 		<author>rhythmist, mr900rr, darrenan, tahl_liadon, bmos, DCrumb, RabidPaladin, SoxMax, Cristmo and Kelrugem</author>
 		<description>Adds support for the Strain and Injury HP Variant rules and more to the 3.5E and PFRPG rulesets.</description>
 		<ruleset>

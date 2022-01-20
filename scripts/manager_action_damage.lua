@@ -106,13 +106,27 @@ function handleApplyDamage(msgOOB)
 				bSImmune[k] = false;
 				-- bFortif[k] = false;
 				bSFortif[k] = false;
+				local bVorpal = false;
+				for _,sDmgType in pairs(aSrcDmgClauseTypes) do
+					-- KEL adding vorpal ability, ignoring crit immunity
+					if (sDmgType == "vorpal") then
+						bVorpal = true;
+						break;
+					end
+				end
 				for _,sDmgType in pairs(aSrcDmgClauseTypes) do
 					if StringManager.contains(DataCommon.basicdmgtypes, sDmgType) then
 						if aImmune[sDmgType] then nBasicDmgTypeMatches = nBasicDmgTypeMatches + 1; end
 						if aFortif[sDmgType] then nBasicDmgTypeMatchesFortif = nBasicDmgTypeMatchesFortif + 1; end
 					else
 						nSpecialDmgTypes = nSpecialDmgTypes + 1;
-						if aImmune[sDmgType] then nSpecialDmgTypeMatches = nSpecialDmgTypeMatches + 1; end
+						if aImmune[sDmgType] then
+							if (sDmgType == "critical") and bVorpal then
+								-- Do nothing, crit negation
+							else
+								nSpecialDmgTypeMatches = nSpecialDmgTypeMatches + 1;
+							end
+						end
 						if aFortif[sDmgType] then nSpecialDmgTypeMatchesFortif = nSpecialDmgTypeMatchesFortif + 1; end
 					end
 					if (sDmgType == "bypass") or (sDmgType == "immunebypass") then
@@ -2130,8 +2144,8 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 				rRollHeal.sType = "damage";
 				rRollHeal.aDice = {nil, {result = 0}};
 				rRollHeal.nMod = nHealAmount;
-				rRollHeal.sDesc = "[DAMAGE] [REV] Reverted Heal [TYPE: positive]";
-				rRollHeal.clauses = { dice = { }, dmgtype = "positive", modifier = nHealAmount };
+				rRollHeal.sDesc = "[DAMAGE] [REV] Reverted Heal [TYPE: positive, spell]";
+				rRollHeal.clauses = { dice = { }, dmgtype = "positive, spell", modifier = nHealAmount };
 				rRollHeal.tags = tags;
 				nHealAmount = 0;
 				encodeDamageTypes(rRollHeal);

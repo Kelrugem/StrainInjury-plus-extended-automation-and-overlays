@@ -128,6 +128,8 @@ function onInit()
 	table.insert(DataCommon.immunetypes, "injury");
 	table.insert(DataCommon.dmgtypes, "immunebypass");
 	table.insert(DataCommon.specialdmgtypes, "immunebypass");
+	table.insert(DataCommon.dmgtypes, "vorpal");
+	table.insert(DataCommon.specialdmgtypes, "vorpal");
 	table.insert(DataCommon.dmgtypes, "resistbypass");
 	table.insert(DataCommon.specialdmgtypes, "resistbypass");
 	table.insert(DataCommon.dmgtypes, "resisthalved");
@@ -150,7 +152,10 @@ function onInit()
 	table.remove(DataCommon.immunetypes, 8);
 	table.remove(DataCommon.immunetypes, 8);
 	-- KEL Modifier buttons
-	ModifierManager.addModWindowPresets({ { sCategory = "damage", tPresets = { "DMG_INJURY", "DMG_ACCURACY" } } });
+	ModifierManager.addModWindowPresetButton("attack", "ATT_CA", 7);
+	ModifierManager.addModWindowPresetButton("attack", "", 8);
+	ModifierManager.addModWindowPresetButton("damage", "DMG_INJURY");
+	ModifierManager.addModWindowPresetButton("damage", "DMG_ACCURACY", 1);
 	ModifierManager.addModWindowPresets({ { sCategory = "general", tPresets = { "ADV", "DISADV" } } });
 	ModifierManager.addKeyExclusionSets({ { "ADV", "DISADV" } });
 	
