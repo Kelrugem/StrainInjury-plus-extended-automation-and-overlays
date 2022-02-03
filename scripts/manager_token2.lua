@@ -20,6 +20,8 @@ function onInit()
     DB.addHandler("combattracker.list.*.death", "onUpdate", updateDeathOverlay);
 	OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_APPLYOVERLAY, handleApplyOverlay);
 	OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_APPLYWOUNDS, handleApplyWounds);
+	
+	-- KEL maybe updating the wound overlays at campaign start via a health status request using ActorManager35E?
 end
 
 function getHealthInfo(nodeCT)
