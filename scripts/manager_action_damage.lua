@@ -55,7 +55,7 @@ function handleApplyDamage(msgOOB)
 	local bPFMode = DataCommon.isPFRPG();
 
 	-- if string.match(rMessage.text, "%[DAMAGE") then
-	local rDamageOutput = decodeDamageText(nTotal, msgOOB.sDamage);
+	local rDamageOutput = ActionDamage.decodeDamageText(nTotal, msgOOB.sDamage);
 	if rTarget and rDamageOutput.aDamageTypes then
 		local aImmune = EffectManager35E.getEffectsBonusByType(rTarget, "IMMUNE", false, {}, rSource, false, msgOOB.tags);
 		local aFortif = EffectManager35E.getEffectsBonusByType(rTarget, "FORTIF", false, {}, rSource, false, msgOOB.tags);
@@ -176,10 +176,10 @@ function handleApplyDamage(msgOOB)
 	-- END
 	--KEL Add immune and fortif information, even when there is no additional roll (for immunity information)
 	if not isFortif then 
-		applyDamage(rSource, rTarget, (tonumber(msgOOB.nSecret) == 1), msgOOB.sRollType, msgOOB.sDamage, nTotal, bSImmune, bSFortif, msgOOB.tags);
+		ActionDamage.applyDamage(rSource, rTarget, (tonumber(msgOOB.nSecret) == 1), msgOOB.sRollType, msgOOB.sDamage, nTotal, bSImmune, bSFortif, msgOOB.tags);
 	else
 		local aRollFortif = { sType = "fortification", aDice = bDice, nMod = 0, aType = msgOOB.sRollType, aMessagetext = msgOOB.sDamage, aTotal = nTotal, aTags = msgOOB.tags};
-		local rDamageOutput = decodeDamageText(nTotal, msgOOB.sDamage);
+		local rDamageOutput = ActionDamage.decodeDamageText(nTotal, msgOOB.sDamage);
 		if tonumber(msgOOB.nSecret) == 1 then
 			aRollFortif.bTower = "true";
 		else
@@ -240,7 +240,7 @@ function handleApplyDamage(msgOOB)
 				end
 			end
 			local aAttackFilter = {msgOOB.sFilter};
-			getTargetDamageRoll(rTarget, rSource, aAttackFilter, msgOOB.tags);
+			ActionDamage.getTargetDamageRoll(rTarget, rSource, aAttackFilter, msgOOB.tags);
 		end
 	end
 	-- END
@@ -309,7 +309,7 @@ function getRoll(rActor, rAction, tag)
 	end
 	
 	-- Encode the damage types
-	encodeDamageTypes(rRoll);
+	ActionDamage.encodeDamageTypes(rRoll);
 
 	-- Encode meta tags
 	if rAction.meta then
@@ -324,7 +324,7 @@ function getRoll(rActor, rAction, tag)
 end
 
 function performRoll(draginfo, rActor, rAction)
-	local rRoll = getRoll(rActor, rAction);
+	local rRoll = ActionDamage.getRoll(rActor, rAction);
 	
 	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
@@ -368,7 +368,7 @@ function onDamageRoll(rSource, rRoll)
 			local nDieSides = tonumber(v.type:match("[dgpr](%d+)")) or 0;
 			if nDieSides > 0 then
 				v.result = nDieSides;
-				v.value = nil;
+				v.value = v.result;
 			end
 		end
 	end
@@ -428,7 +428,7 @@ function notifyTDMGRollOnClient(msgOOB)
 	local rSource = ActorManager.resolveActor(msgOOB.sSourceNode);
 	local rTarget = ActorManager.resolveActor(msgOOB.sTargetNode);
 	local aAttackFilter = {msgOOB.sFilter};
-	getTargetDamageRoll(rTarget, rSource, aAttackFilter, msgOOB.tags);
+	ActionDamage.getTargetDamageRoll(rTarget, rSource, aAttackFilter, msgOOB.tags);
 end
 
 function getTargetDamageRoll(rTarget, rSource, aAttackFilter, tags)
@@ -492,7 +492,7 @@ function getTargetDamageRoll(rTarget, rSource, aAttackFilter, tags)
 			end
 			
 			-- Encode the damage types
-			encodeDamageTypes(rRoll);
+			ActionDamage.encodeDamageTypes(rRoll);
 			
 			ActionsManager.roll(rTarget, rSource, rRoll);
 		end
@@ -528,7 +528,7 @@ function onDamage(rSource, rTarget, rRoll)
 	end
 	
 	-- Apply damage to the PC or CT entry referenced
-	notifyApplyDamage(rSource, rTarget, rRoll.bTower, rRoll.sType, rMessage.text, nTotal, aAttackFilter, tag);
+	ActionDamage.notifyApplyDamage(rSource, rTarget, rRoll.bTower, rRoll.sType, rMessage.text, nTotal, aAttackFilter, tag);
 	-- END
 end
 
@@ -547,7 +547,7 @@ function onStabilization(rSource, rTarget, rRoll)
 	if bSuccess then
 		ActorManager35E.applyStableEffect(rSource);
 	else
-		applyFailedStabilization(rSource);
+		ActionDamage.applyFailedStabilization(rSource);
 	end
 end
 
@@ -1123,7 +1123,7 @@ function decodeAndOrClauses(sText)
 			end
 			
 			if nStartOR then
-				nParen = getParenDepth(sText, nStartOR);
+				nParen = ActionDamage.getParenDepth(sText, nStartOR);
 				if nParen ~= 0 then
 					nTempIndex = nEndOR + 1;
 				end
@@ -1146,7 +1146,7 @@ function decodeAndOrClauses(sText)
 				nStartAND, nEndAND = string.find(sPhraseOR, "%s+and%s+", nTempIndex);
 				
 				if nStartAND then
-					nParen = getParenDepth(sText, nIndexOR + nStartAND);
+					nParen = ActionDamage.getParenDepth(sText, nIndexOR + nStartAND);
 					if nParen ~= 0 then
 						nTempIndex = nEndAND + 1;
 					end
@@ -1279,8 +1279,8 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFor
 						
 						local sRegen = table.concat(vRegen.remainder, " ");
 						
-						aClausesOR = decodeAndOrClauses(sRegen);
-						if matchAndOrClauses(aClausesOR, aSrcDmgClauseTypes) then
+						aClausesOR = ActionDamage.decodeAndOrClauses(sRegen);
+						if ActionDamage.matchAndOrClauses(aClausesOR, aSrcDmgClauseTypes) then
 							bApplyRegen = false;
 							-- KEL
 							aInjury = true;
@@ -1566,8 +1566,8 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFor
 					end
 				else
 					bApplyDR[vDR] = true;
-					aClausesOR = decodeAndOrClauses(kDR);
-					if matchAndOrClauses(aClausesOR, aSrcDmgClauseTypes) then
+					aClausesOR = ActionDamage.decodeAndOrClauses(kDR);
+					if ActionDamage.matchAndOrClauses(aClausesOR, aSrcDmgClauseTypes) then
 						bApplyDR[vDR] = false;
 					end
 					if bApplyDR[vDR] and MaxDRMod < vDR.mod then
@@ -1831,13 +1831,13 @@ end
 
 -- KEL Fortification roll
 function onFortification(rSource, rTarget, rRoll)
-	local rDamageOutput = decodeDamageText(tonumber(rRoll.aTotal), rRoll.aMessagetext);
+	local rDamageOutput = ActionDamage.decodeDamageText(tonumber(rRoll.aTotal), rRoll.aMessagetext);
 	local FortifSuccess = {};
 	local m = 1;
 	local bImmune = {};
 	local bFortif = {};
 	local MaxFortifMod = {};
-	local bSecrets = toboolean(rRoll.bTower);
+	local bSecrets = ActionDamage.toboolean(rRoll.bTower);
 	if rTarget then
 		for k, v in pairs(rDamageOutput.aDamageTypes) do
 			local l = "KELFORTIF " .. k;
@@ -1850,10 +1850,10 @@ function onFortification(rSource, rTarget, rRoll)
 				end
 			end
 			if #aSrcDmgClauseTypes > 0 then
-				bImmune["all"] = toboolean(rRoll.ImmuneAll);
-				bFortif["all"] = toboolean(rRoll.FortifAll);
-				bImmune[k] = toboolean(rRoll[k]);
-				bFortif[k] = toboolean(rRoll[l]);
+				bImmune["all"] = ActionDamage.toboolean(rRoll.ImmuneAll);
+				bFortif["all"] = ActionDamage.toboolean(rRoll.FortifAll);
+				bImmune[k] = ActionDamage.toboolean(rRoll[k]);
+				bFortif[k] = ActionDamage.toboolean(rRoll[l]);
 				MaxFortifMod[k] = tonumber(rRoll[q]);
 			end
 		end
@@ -2212,7 +2212,7 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 		local isHalf = sDamage:match("%[HALF%]");
 		local sAttack = sDamage:match("%[DAMAGE[^]]*%] ([^[]+)");
 		if sAttack then
-			local sDamageState = getDamageState(rSource, rTarget, StringManager.trim(sAttack));
+			local sDamageState = ActionDamage.getDamageState(rSource, rTarget, StringManager.trim(sAttack));
 			if sDamageState == "none" then
 				isAvoided = true;
 				bRemoveTarget = true;
@@ -2339,8 +2339,8 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 								local rEffectComp = EffectManager35E.parseEffectComp(aEffectComps[i]);
 								if rEffectComp.type == "REGEN" then
 									local sRegen = table.concat(rEffectComp.remainder, " ");
-									aClausesOR = decodeAndOrClauses(sRegen);
-									if matchAndOrClauses(aClausesOR, aActualDamageTypes) then
+									aClausesOR = ActionDamage.decodeAndOrClauses(sRegen);
+									if ActionDamage.matchAndOrClauses(aClausesOR, aActualDamageTypes) then
 										bMatch = true;
 									end
 								end
@@ -2390,7 +2390,7 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 	local _,sNewStatus = ActorManager35E.getWoundPercent(rTarget, bNonLethalUncons);
 	-- END
 	local bShowStatus = false;
-	if ActorManager.getFaction(rTarget) == "friend" then
+	if ActorManager.isFaction(rTarget, "friend") then
 		bShowStatus = not OptionsManager.isOption("SHPC", "off");
 	else
 		bShowStatus = not OptionsManager.isOption("SHNPC", "off");
@@ -2416,8 +2416,8 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 	end
 	
 	-- Manage Stable effect add/remove when healed
-	if (sOriginalStatus == ActorHealthManager.STATUS_DYING) or (sOriginalStatus == ActorHealthManager.STATUS_DEAD) then
-		if (sNewStatus ~= ActorHealthManager.STATUS_DYING) and (sNewStatus ~= ActorHealthManager.STATUS_DEAD) then
+	if ActorHealthManager.isDyingOrDeadStatus(sOriginalStatus) then
+		if not ActorHealthManager.isDyingOrDeadStatus(sNewStatus) then
 			ActorManager35E.removeStableEffect(rTarget);
 		else
 			if ((rDamageOutput.sType == "heal") or (rDamageOutput.sType == "fheal") or (rDamageOutput.sType == "regen")) and (rDamageOutput.nVal > 0) then
@@ -2434,7 +2434,7 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 	end
 	
 	-- Output results
-	messageDamage(rSource, rTarget, bSecret, rDamageOutput.sTypeOutput, sDamage, rDamageOutput.sVal, table.concat(rDamageOutput.tNotifications, " "));
+	ActionDamage.messageDamage(rSource, rTarget, bSecret, rDamageOutput.sTypeOutput, sDamage, rDamageOutput.sVal, table.concat(rDamageOutput.tNotifications, " "));
 
 	-- KEL rolling reverted rolls; important due to DB readings of the HP: Put this to the end here
 	if rRollHeal.nMod and ( rRollHeal.nMod > 0 ) then
@@ -2557,7 +2557,7 @@ function applyFailedStabilization(rActor)
 	end
 
 	-- Output results
-	messageDamage(nil, rActor, false, sDamageTypeOutput, sDamage, sDamageOutput, table.concat(aNotifications, " "));
+	ActionDamage.messageDamage(nil, rActor, false, sDamageTypeOutput, sDamage, sDamageOutput, table.concat(aNotifications, " "));
 end
 
 --
@@ -2584,13 +2584,13 @@ function handleApplyDamageState(msgOOB)
 	local rTarget = ActorManager.resolveActor(msgOOB.sTargetNode);
 	
 	if Session.IsHost then
-		setDamageState(rSource, rTarget, msgOOB.sAttack, msgOOB.sState);
+		ActionDamage.setDamageState(rSource, rTarget, msgOOB.sAttack, msgOOB.sState);
 	end
 end
 
 function setDamageState(rSource, rTarget, sAttack, sState)
 	if not Session.IsHost then
-		applyDamageState(rSource, rTarget, sAttack, sState);
+		ActionDamage.applyDamageState(rSource, rTarget, sAttack, sState);
 		return;
 	end
 	
