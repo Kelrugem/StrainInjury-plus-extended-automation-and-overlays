@@ -13,7 +13,7 @@
 		</ruleset>
 		<loadorder>36</loadorder>
 	</properties>
-	<announcement text="Strain and Injury HP Variant Rules, dated at 23 January 2022, and more for FG v4.1.13 3.5E and PFRPG rulesets. Copyright 2022 Smiteworks.\rBy darrenan, mr900rr, phixation, tahl_liadon, bmos, DCrumb, RabidPaladin, SoxMax, Cristmo and Kelrugem." icon="DeekinMightyBard" font="emotefont" />
+	<announcement text="Strain and Injury HP Variant Rules, dated at 9 April 2022, and more for FG v4.1.16 3.5E and PFRPG rulesets. Copyright 2022 Smiteworks.\rBy darrenan, mr900rr, phixation, tahl_liadon, bmos, DCrumb, RabidPaladin, SoxMax, Cristmo and Kelrugem." icon="DeekinMightyBard" font="emotefont" />
 	<base>
 		<icon name="DeekinMightyBard" file="DeekinMightyBard.jpg" />
 		<!-- Graphics -->
@@ -48,7 +48,7 @@
 		
 		<!-- Party sheet -->
 		<includefile source="ps/ps_main.xml" />
-		<script name="PartyManager2" file="ps/scripts/manager_ps2.lua" />
+		<script name="PartyManager2" file="scripts/manager_ps2.lua" />
 
 		<!-- High-level scripts -->
 		<script name="ActionsManagerKel" file="scripts/manager_actions.lua" />
