@@ -32,15 +32,22 @@ iftagcomp = {
 	"mind-affecting",
 	"mindaffecting"
 }
--- END
 tconstructtraits = {
 	"mindaffecting",
 	"death",
 	"necromancy",
 	"paralysis",
 	"poison",
-	"sleep"	
+	"sleep",
+	"stun",
+	"disease",
+	"abilitydamage",
+	"abilitydrain",
+	"energydrain",
+	"fatigue",
+	"exhaustion"
 }
+-- Note: Dragon immunities actually just against magical effects
 tdragontraits = {
 	"sleep",
 	"paralysis"
@@ -48,31 +55,47 @@ tdragontraits = {
 telementaltraits = {
 	"poison",
 	"sleep",
-	"paralysis"
+	"paralysis",
+	"stun"
 }
+-- Note: Ooze with intelligence are not immune to mind-affecting
 toozetraits = {
 	"poison",
 	"sleep",
 	"paralysis",
-	"polymorph"
+	"polymorph",
+	"stun",
+	"mindaffecting",
+	"gaze",
+	"visual",
+	"illusion"
 }
 tplanttraits = {
 	"mindaffecting",
 	"paralysis",
 	"poison",
-	"sleep"
+	"sleep",
+	"polymorph",
+	"stun"
 }
+-- Note: There is also immunity to physical ability damage, currently not parsed
 tundeadtraits = {
 	"mindaffecting",
 	"death",
 	"disease",
 	"paralysis",
 	"poison",
-	"sleep"
+	"sleep",
+	"stun",
+	"fatigue",
+	"exhaustion",
+	"abilitydrain",
+	"energydrain"
 }
 tvermintraits = {
 	"mindaffecting"
 }
+-- END
 -- Adding ethereal and (improved) evasion; need to overwrite full vector for ordering
 conditions = {
 	"blinded", 
@@ -163,5 +186,7 @@ function onInit()
 	
 	if not DataCommon.isPFRPG() then
 		table.insert(tnodex, "grappled");
+	else
+		table.insert(telementaltraits, "bleed");
 	end
 end
