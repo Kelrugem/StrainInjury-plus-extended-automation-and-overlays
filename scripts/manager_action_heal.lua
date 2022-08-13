@@ -40,6 +40,13 @@ function getRoll(rActor, rAction, tag)
 	if rAction.subtype == "temp" then
 		rRoll.sDesc = rRoll.sDesc .. " [TEMP]";
 	end
+	
+	-- KEL and bmos adding nonlethal healing
+	-- Handle strain damage
+	if rAction.subtype == "strain" then
+		rRoll.sDesc = rRoll.sDesc .. " [STRAIN]";
+	end
+	-- END
 
 	-- Encode meta tags
 	if rAction.meta then
