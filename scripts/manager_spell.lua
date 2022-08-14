@@ -1505,6 +1505,10 @@ function getActionHealText(nodeAction)
 	local sHeal = StringManager.convertDiceToString(aHealDice, nHealMod);
 	if DB.getValue(nodeAction, "healtype", "") == "temp" then
 		sHeal = sHeal .. " temporary";
+	-- KEL and bmos adding nonlethal healing
+	elseif DB.getValue(nodeAction, "healtype", "") == "strain" then
+		sHeal = sHeal .. " strain";
+	-- END
 	end
 	
 	local sMeta = DB.getValue(nodeAction, "meta", "");

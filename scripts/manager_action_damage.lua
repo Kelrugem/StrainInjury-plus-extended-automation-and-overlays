@@ -71,10 +71,10 @@ function handleApplyDamage(msgOOB)
 				aImmune["critical"] = true;
 			end
 		end
-		for k, v in pairs(rDamageOutput.aDamageTypes) do
+		for k, _ in pairs(rDamageOutput.aDamageTypes) do
 			MaxFortifMod[k] = 0;
 		end
-		for k, v in pairs(rDamageOutput.aDamageTypes) do
+		for k, _ in pairs(rDamageOutput.aDamageTypes) do
 			-- GET THE INDIVIDUAL DAMAGE TYPES FOR THIS ENTRY (EXCLUDING UNTYPED DAMAGE TYPE)
 			local aSrcDmgClauseTypes = {};
 			local aTemp = StringManager.split(k, ",", true);
@@ -121,9 +121,7 @@ function handleApplyDamage(msgOOB)
 					else
 						nSpecialDmgTypes = nSpecialDmgTypes + 1;
 						if aImmune[sDmgType] then
-							if (sDmgType == "critical") and bVorpal then
-								-- Do nothing, crit negation
-							else
+							if not ((sDmgType == "critical") and bVorpal) then
 								nSpecialDmgTypeMatches = nSpecialDmgTypeMatches + 1;
 							end
 						end
@@ -179,14 +177,14 @@ function handleApplyDamage(msgOOB)
 		ActionDamage.applyDamage(rSource, rTarget, (tonumber(msgOOB.nSecret) == 1), msgOOB.sRollType, msgOOB.sDamage, nTotal, bSImmune, bSFortif, msgOOB.tags);
 	else
 		local aRollFortif = { sType = "fortification", aDice = bDice, nMod = 0, aType = msgOOB.sRollType, aMessagetext = msgOOB.sDamage, aTotal = nTotal, aTags = msgOOB.tags};
-		local rDamageOutput = ActionDamage.decodeDamageText(nTotal, msgOOB.sDamage);
+		-- local rDamageOutput = ActionDamage.decodeDamageText(nTotal, msgOOB.sDamage);
 		if tonumber(msgOOB.nSecret) == 1 then
 			aRollFortif.bTower = "true";
 		else
 			aRollFortif.bTower = "false";
 		end
 		if rTarget then
-			for k, v in pairs(rDamageOutput.aDamageTypes) do
+			for k, _ in pairs(rDamageOutput.aDamageTypes) do
 				local l = "KELFORTIF " .. k;
 				local m = "KELFORTIFMOD " .. k;
 				local aSrcDmgClauseTypes = {};
@@ -545,7 +543,10 @@ function onStabilization(rSource, rTarget, rRoll)
 	Comm.deliverChatMessage(rMessage);
 
 	if bSuccess then
-		ActorManager35E.applyStableEffect(rSource);
+		EffectManager.addCondition(rSource, "Stable");
+		-- KEL Need to update overlay here after stable effect was applied
+		local _,_,_ = ActorManager35E.getWoundPercent(rSource);
+		-- END
 	else
 		ActionDamage.applyFailedStabilization(rSource);
 	end
@@ -771,7 +772,7 @@ function applyConditionsToModRoll(rRoll, rSource, rTarget)
 			rRoll.nEffectMod = rRoll.nEffectMod - 2;
 			rRoll.bEffects = true;
 		end
-		if EffectManager35E.hasEffect(rSource, "Incorporeal", nil, false, false, rRoll.tags) and (rRoll.range == "M") 
+		if EffectManager35E.hasEffect(rSource, "Incorporeal", nil, false, false, rRoll.tags) and (rRoll.range == "M")
 				and not rRoll.sDesc:lower():match("incorporeal touch") then
 			rRoll.bEffects = true;
 			table.insert(rRoll.tNotifications, "[INCORPOREAL]");
@@ -1069,7 +1070,7 @@ function getDamageTypesFromString(sDamageTypes)
 	local aSplit = StringManager.split(sLower, ",", true);
 	
 	local aDamageTypes = {};
-	for k, v in ipairs(aSplit) do
+	for _, v in ipairs(aSplit) do
 		if StringManager.contains(DataCommon.dmgtypes, v) then
 			table.insert(aDamageTypes, v);
 		end
@@ -1101,7 +1102,7 @@ function getParenDepth(sText, nIndex)
 end
 
 function decodeAndOrClauses(sText)
-	local nIndexOR;
+	local nIndexOR = 1;
 	local nStartOR, nEndOR, nStartAND, nEndAND;
 	local nStartOR2, nEndOR2;
 	local nParen;
@@ -1109,7 +1110,6 @@ function decodeAndOrClauses(sText)
 
 	local aClausesOR = {};
 	local aSkipOR = {};
-	local nIndexOR = 1;
 	while nIndexOR < #sText do
 		local nTempIndex = nIndexOR;
 		repeat
@@ -1182,11 +1182,11 @@ function decodeAndOrClauses(sText)
 end
 
 function matchAndOrClauses(aClausesOR, aMatchWords)
-	for kClauseOR, aClausesAND in ipairs(aClausesOR) do
+	for _, aClausesAND in ipairs(aClausesOR) do
 		local bMatchAND = true;
 		local nMatchAND = 0;
 
-		for kClauseAND, sClause in ipairs(aClausesAND) do
+		for _, sClause in ipairs(aClausesAND) do
 			nMatchAND = nMatchAND + 1;
 
 			if not StringManager.contains(aMatchWords, sClause) then
@@ -1257,7 +1257,7 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFor
 		end
 		if nRegen > 0 then
 			local aRemap = {};
-			for k,v in pairs(rDamageOutput.aDamageTypes) do
+			for k,_ in pairs(rDamageOutput.aDamageTypes) do
 				local bCheckRegen = true;
 				
 				local aSrcDmgClauseTypes = {};
@@ -1299,7 +1299,7 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFor
 					end
 				end
 			end
-			for k,v in pairs(aRemap) do
+			for k,_ in pairs(aRemap) do
 				rDamageOutput.aDamageTypes[v] = rDamageOutput.aDamageTypes[k];
 				rDamageOutput.aDamageTypes[k] = nil;
 			end
@@ -1323,7 +1323,6 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFor
 			end
 		end
 		if #aSrcDmgClauseTypes > 0 then
-			local DMGAccounted = {};
 			for _,sDmgType in pairs(aSrcDmgClauseTypes) do
 				roundingvariableVulnCeil[sDmgType] = false;
 				roundingvariableHResistFloor[sDmgType] = false;
@@ -1518,7 +1517,7 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFor
 		if bApplyIncorporeal and (v + nLocalDamageAdjust) > 0 then
 			local bIgnoreDamage = true;
 			local bApplyIncorporeal2 = true;
-			for keyDmgType, sDmgType in pairs(aSrcDmgClauseTypes) do
+			for _, sDmgType in pairs(aSrcDmgClauseTypes) do
 				if sDmgType == "force" then
 					bApplyIncorporeal2 = false;
 				elseif sDmgType == "ghost touch" then
@@ -1764,7 +1763,7 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFor
 				end
 				
 				-- KEL REVERT
-				if not bRevHeal and not bRevApplied then
+				if not bRevHeal then
 					if aRevert["all"] then
 						nLocalRevert = nLocalRevert + v + nLocalDamageAdjust;
 						nLocalDamageAdjust = - v;
@@ -2004,6 +2003,11 @@ function decodeDamageText(nDamage, sDamageDesc)
 		if string.match(sDamageDesc, "%[TEMP%]") then
 			rDamageOutput.sType = "temphp";
 			rDamageOutput.sTypeOutput = "Temporary hit points";
+		-- KEL and bmos adding nonlethal healing
+		elseif string.match(sDamageDesc, "%[STRAIN%]") then
+			rDamageOutput.sType = "strainhp";
+			rDamageOutput.sTypeOutput = "Strain heal";
+		-- END
 		else
 			rDamageOutput.sType = "heal";
 			rDamageOutput.sTypeOutput = "Heal";
@@ -2160,10 +2164,7 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 		-- END
 		else
 			-- CALCULATE HEAL AMOUNTS
-			local nOriginalWounds = nWounds;
-			local nOriginalInjury = nInjury;
-
-            local nInjuryHealAmount = math.min(nHealAmount, nInjury);
+			local nInjuryHealAmount = math.min(nHealAmount, nInjury);
             nInjury = nInjury - nInjuryHealAmount;
 
 			local nWoundHealAmount = math.min(nHealAmount - nInjuryHealAmount, nWounds);
@@ -2194,6 +2195,16 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 	-- Temporary hit points
 	elseif rDamageOutput.sType == "temphp" then
 		nTempHP = nTempHP + rDamageOutput.nVal;
+
+-- KEL and bmos adding nonlethal healing
+	-- Nonlethal hit points
+	elseif rDamageOutput.sType == "strainhp" then
+		nWounds = nWounds - rDamageOutput.nVal;
+
+		if nWounds < 0 then
+			nWounds = 0;
+		end
+-- END
 
 	-- Damage
 	else
@@ -2339,7 +2350,7 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 								local rEffectComp = EffectManager35E.parseEffectComp(aEffectComps[i]);
 								if rEffectComp.type == "REGEN" then
 									local sRegen = table.concat(rEffectComp.remainder, " ");
-									aClausesOR = ActionDamage.decodeAndOrClauses(sRegen);
+									local aClausesOR = ActionDamage.decodeAndOrClauses(sRegen);
 									if ActionDamage.matchAndOrClauses(aClausesOR, aActualDamageTypes) then
 										bMatch = true;
 									end
@@ -2418,18 +2429,30 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 	-- Manage Stable effect add/remove when healed
 	if ActorHealthManager.isDyingOrDeadStatus(sOriginalStatus) then
 		if not ActorHealthManager.isDyingOrDeadStatus(sNewStatus) then
-			ActorManager35E.removeStableEffect(rTarget);
+			EffectManager.removeCondition(rTarget, "Stable");
+			-- KEL Need to update overlay here after stable effect was applied
+			local _,_,_ = ActorManager35E.getWoundPercent(rTarget);
+			-- END
 		else
 			if ((rDamageOutput.sType == "heal") or (rDamageOutput.sType == "fheal") or (rDamageOutput.sType == "regen")) and (rDamageOutput.nVal > 0) then
-				ActorManager35E.applyStableEffect(rTarget);
+				EffectManager.addCondition(rTarget, "Stable");
+				-- KEL Need to update overlay here after stable effect was applied
+				local _,_,_ = ActorManager35E.getWoundPercent(rTarget);
+				-- END
 			elseif (rDamageOutput.sType == "damage") and (rDamageOutput.nVal > 0) then
-				ActorManager35E.removeStableEffect(rTarget);
+				EffectManager.removeCondition(rTarget, "Stable");
+				-- KEL Need to update overlay here after stable effect was applied
+				local _,_,_ = ActorManager35E.getWoundPercent(rTarget);
+				-- END
 			end
 		end
 	-- KEL Clean up when there is still the stable effect (for unconscious people getting lethal damage)
 	elseif EffectManager35E.hasEffectCondition(rTarget, "Stable") then
 		if not bNonLethalUncons and (rDamageOutput.sType == "damage") and (rDamageOutput.nVal > 0) then
-			ActorManager35E.removeStableEffect(rTarget);
+			EffectManager.removeCondition(rTarget, "Stable");
+			-- KEL Need to update overlay here after stable effect was applied
+			local _,_,_ = ActorManager35E.getWoundPercent(rTarget);
+			-- END
 		end
 	end
 	
@@ -2458,8 +2481,12 @@ function messageDamage(rSource, rTarget, bSecret, sDamageType, sDamageDesc, sTot
 	
 	local msgShort = {font = "msgfont"};
 	local msgLong = {font = "msgfont"};
+	
+	-- KEL and bmos adding nonlethal hit points
+	-- if sDamageType == "Heal" or sDamageType == "Temporary hit points" then
+	if sDamageType == "Heal" or sDamageType == "Temporary hit points" or sDamageType == "Strain heal" then
+	-- END	
 
-	if sDamageType == "Heal" or sDamageType == "Temporary hit points" then
 		msgShort.icon = "roll_heal";
 		msgLong.icon = "roll_heal";
 	else
