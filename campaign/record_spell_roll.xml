@@ -362,6 +362,17 @@
 			</stringu>
 		</sheetdata>
 	</windowclass>
+	<windowclass name="power_heal_editor_main" merge="join">
+		<sheetdata>
+			<button_stringcycler name="healtype">
+				<parameters>
+					<defaultlabelres>power_label_healtypenormal</defaultlabelres>
+					<labelsres>power_label_healtypetemp|power_label_healtypestrain</labelsres>
+					<values>temp|strain</values>
+				</parameters>
+			</button_stringcycler>
+		</sheetdata>
+	</windowclass>
 	
 	<windowclass name="power_heal_entry" merge="delete"> </windowclass>
 	<windowclass name="power_heal_entry">
