@@ -7,37 +7,7 @@
 
 <root>
 	<windowclass name="combattracker_client" merge="join">
-		<script>
-			function onInit()
-				super.super.onInit();
-				OptionsManager.registerCallback("SHPC", updateHealthDisplay);
-				OptionsManager.registerCallback("SHNPC", updateHealthDisplay);
-				self.updateHealthDisplay();
-			end
-			
-			function onClose()
-				super.super.onClose();
-				OptionsManager.unregisterCallback("SHPC", updateHealthDisplay);
-				OptionsManager.unregisterCallback("SHNPC", updateHealthDisplay);
-			end
-			
-			function updateHealthDisplay()
-				local sOptSHPC = OptionsManager.getOption("SHPC");
-				local sOptSHNPC = OptionsManager.getOption("SHNPC");
-				local bShowDetail = (sOptSHPC == "detailed") or (sOptSHNPC == "detailed");
-				
-				label_hp.setVisible(bShowDetail);
-				label_temp.setVisible(bShowDetail);
-				label_injury.setVisible(bShowDetail);
-				label_strain.setVisible(bShowDetail);
-
-				label_status.setVisible(not bShowDetail);
-
-				for _,w in pairs(list.getWindows()) do
-					w.updateHealthDisplay();
-				end
-			end
-		</script>
+		<!-- <script file="ct/scripts/clientct_window_dnd.lua" /> -->
 		<sheetdata>
 			<label_ct_right name="label_wounds" merge="delete" />
 			<label_ct_right name="label_nonlethal" merge="delete" />
