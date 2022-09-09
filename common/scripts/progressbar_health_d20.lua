@@ -8,7 +8,15 @@ local sTempHealthNodePath = nil;
 local sWoundNodePath = nil;
 local sNonlethalWoundNodePath = nil;
 
-function onInit()
+local _bParsed = false;
+local _bInitialized = false;
+
+function parse()
+	if _bParsed then
+		return;
+	end
+	_bParsed = true;
+
 	local node = window.getDatabaseNode();
 	sMaxHealthNodePath = DB.getPath(node, "hptotal");
 	sTempHealthNodePath = DB.getPath(node, "hptemp");
@@ -16,7 +24,33 @@ function onInit()
 	-- KEL
 	sNonlethalWoundNodePath = DB.getPath(node, "injury");
 	-- END
+end
+function init()
+	if _bInitialized then
+		return;
+	end
+	_bInitialized = true;
 
+	self.parse();
+	self.addHandlers();
+	self.initFillControl();
+	self.onHealthChanged();
+	self.update();
+end
+
+function addHandlers()
+	if sMaxHealthNodePath then
+		DB.addHandler(sMaxHealthNodePath, "onUpdate", onMaxChanged);
+	end
+	if sTempHealthNodePath then
+		DB.addHandler(sTempHealthNodePath, "onUpdate", onTempChanged);
+	end
+	if sWoundNodePath then
+		DB.addHandler(sWoundNodePath, "onUpdate", onWoundChanged);
+	end
+	if sNonlethalWoundNodePath then
+		DB.addHandler(sNonlethalWoundNodePath, "onUpdate", onNonlethalChanged);
+	end
 
 	OptionsManager.registerCallback("BARC", update);
 	OptionsManager.registerCallback("WNDC", update);
@@ -24,7 +58,7 @@ function onInit()
 		OptionsManager.registerCallback("SHPC", update);
 	end
 end
-function onClose()
+function removeHandlers()
 	if sMaxHealthNodePath then
 		DB.removeHandler(sMaxHealthNodePath, "onUpdate", onMaxChanged);
 	end
@@ -45,38 +79,20 @@ function onClose()
 	end
 end
 
-function onFirstLayout()
-	super.onFirstLayout();
-
-	if sMaxHealthNodePath then
-		DB.addHandler(sMaxHealthNodePath, "onUpdate", onMaxChanged);
-	end
-	if sTempHealthNodePath then
-		DB.addHandler(sTempHealthNodePath, "onUpdate", onTempChanged);
-	end
-	if sWoundNodePath then
-		DB.addHandler(sWoundNodePath, "onUpdate", onWoundChanged);
-	end
-	if sNonlethalWoundNodePath then
-		DB.addHandler(sNonlethalWoundNodePath, "onUpdate", onNonlethalChanged);
-	end
-	onValueChanged();
-end
-
 function onMaxChanged()
-	onValueChanged();
+	self.onHealthChanged();
 end
 function onTempChanged()
-	onValueChanged();
+	self.onHealthChanged();
 end
 function onWoundChanged()
-	onValueChanged();
+	self.onHealthChanged();
 end
 function onNonlethalChanged()
-	onValueChanged();
+	self.onHealthChanged();
 end
 -- KEL
-function onValueChanged()
+function onHealthChanged()
 	local nHP = DB.getValue(sMaxHealthNodePath, 0);
 	local nTempHP = DB.getValue(sTempHealthNodePath, 0);
 
@@ -90,8 +106,8 @@ function onValueChanged()
 		nPercentNonlethal = nWounds / (nHP + nTempHP);
 	end
 	
-	setMax(nHP + nTempHP, true);
-	setValue(nHP + nTempHP - nWounds - nInjury, true);
+	self.setMax(nHP + nTempHP, true);
+	self.setValue(nHP + nTempHP - nWounds - nInjury, true);
 	
 	local sColor;
 	-- KEL adding >= in first line; but still, this part is not completely "correct" due to new nonlethal handling which can not be respected without an overwrite
@@ -102,7 +118,7 @@ function onValueChanged()
 	else
 		sColor = ColorManager.getHealthColor(nPercentWounded, true);
 	end
-	setFillColor(sColor);
+	self.setFillColor(sColor);
 	
 	if Session.IsHost or OptionsManager.isOption("SHPC", "detailed") then
 		local sText = "" .. (nHP - nWounds - nInjury);
@@ -117,9 +133,9 @@ function onValueChanged()
 		if (sPrefix or "") ~= "" then
 			sText = sPrefix .. ": " .. sText;
 		end
-		setText(sText);
+		self.setText(sText);
 	else
-		setText("");
+		self.setText("");
 	end
 end
 -- END

@@ -8,19 +8,16 @@
 <root>
 	<windowclass name="combattracker_host" merge="join">
 		<sheetdata>
-			<label_ct name="label_nonlethal" merge="delete" />
-			<label_ct name="label_wounds">
-				<anchored position="insidetopright" offset="228,38" width="30" />
+			<label_ct_right name="label_nonlethal" merge="delete" />
+			<label_ct_right name="label_wounds" merge="delete" />
+			<label_ct_right name="label_strain" insertbefore="label_temp">
 				<static textres="ct_label_strain" />
 				<tooltip textres="ct_tooltip_strain" />
-				<center />
-			</label_ct>
-            <label_ct name="label_injury">
-                <anchored position="insidetopright" offset="188,38" width="30" />
+			</label_ct_right>
+			<label_ct_right name="label_injury" insertbefore="label_strain">
                 <static textres="ct_label_injury" />
                 <tooltip textres="ct_tooltip_injury" />
-                <center />
-            </label_ct>
+            </label_ct_right>
 		</sheetdata>
 	</windowclass>
 </root>
