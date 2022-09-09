@@ -38,7 +38,7 @@
 					end
 				</script>
 			</number_ct_crosslink>
-            <number_ct_crosslink name="wounds">
+            <number_ct_crosslink name="wounds" insertbefore="initresult" merge="replace">
                 <anchored to="rightanchor" width="30" height="20">
                     <top />
                     <right anchor="left" relation="relative" offset="-10" />
@@ -66,24 +66,6 @@
 					end
 				</script>
 			</number_ct_crosslink>
-			<!-- KEL Adding AoO -->
-			<number_ct name="aoo">
-				<anchored to="sr" position="righthigh" offset="50,0" />
-			</number_ct>
-			<label name="label_aoo">
-				<anchored to="aoo" position="lefthigh" offset="10,0"/>
-				<static textres="attackofOp" />
-			</label>
-			
-			<number_ct name="aoomax">
-				<anchored to="aoo" position="righthigh" offset="15,0" />
-				<default>1</default>
-			</number_ct>
-			<label name="label_aoomax">
-				<anchored to="aoomax" position="lefthigh" offset="5,0"/>
-				<static textres="attackofOpOf" />
-			</label>
-			<!-- End -->
 		</sheetdata>
 	</windowclass>
 </root>

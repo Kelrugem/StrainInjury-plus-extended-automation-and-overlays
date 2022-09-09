@@ -1,8 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<root version="4.2.2.1" release="1">
+
+<root version="3.0">
 	<properties>
 		<name>Feature: StrainInjury plus extended automation and overlays</name>
-		<version>4.2.2.2</version>
+		<version>4.2.2.3</version>
 		<author>rhythmist, mr900rr, darrenan, tahl_liadon, bmos, DCrumb, RabidPaladin, SoxMax, Cristmo and Kelrugem</author>
 		<description>Adds support for the Strain and Injury HP Variant rules and more to the 3.5E and PFRPG rulesets.</description>
 		<ruleset>
@@ -13,7 +14,7 @@
 		</ruleset>
 		<loadorder>36</loadorder>
 	</properties>
-	<announcement text="Strain and Injury HP Variant Rules, dated at 4 September 2022, and more for FG v4.1.16 3.5E and PFRPG rulesets. Copyright 2022 Smiteworks.\rBy darrenan, mr900rr, phixation, tahl_liadon, bmos, DCrumb, RabidPaladin, SoxMax, Cristmo and Kelrugem." icon="DeekinMightyBard" font="emotefont" />
+	<announcement text="Strain and Injury HP Variant Rules, dated at 9 September 2022, and more for FG v4.1.16 3.5E and PFRPG rulesets. Copyright 2022 Smiteworks.\rBy darrenan, mr900rr, phixation, tahl_liadon, bmos, DCrumb, RabidPaladin, SoxMax, Cristmo and Kelrugem." icon="DeekinMightyBard" font="emotefont" />
 	<base>
 		<icon name="DeekinMightyBard" file="DeekinMightyBard.jpg" />
 		<!-- Graphics -->
@@ -44,6 +45,7 @@
 		<!-- Combat tracker -->
 		<includefile source="ct/ct_host.xml" />
 		<includefile source="ct/ct_host_entry.xml" />
+		<includefile source="ct/ct_host_entry_section.xml" />
 		<includefile source="ct/ct_client.xml" />
 		<includefile source="ct/ct_client_entry.xml" />
 		<includefile source="ct/template_ct.xml" />

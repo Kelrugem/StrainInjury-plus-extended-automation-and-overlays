@@ -161,7 +161,9 @@ function linkPCFields(nodePS)
 	PartyManager.linkRecordField(nodeChar, nodePS, "hp.total", "number", "hptotal");
 	PartyManager.linkRecordField(nodeChar, nodePS, "hp.temporary", "number", "hptemp");
 	PartyManager.linkRecordField(nodeChar, nodePS, "hp.wounds", "number", "wounds");
+	-- KEL
 	PartyManager.linkRecordField(nodeChar, nodePS, "hp.injury", "number", "injury");
+	-- END
 	
 	PartyManager.linkRecordField(nodeChar, nodePS, "abilities.strength.score", "number", "strength");
 	PartyManager.linkRecordField(nodeChar, nodePS, "abilities.constitution.score", "number", "constitution");
@@ -263,7 +265,7 @@ end
 function awardXP(nXP) 
 	-- Determine members of party
 	local aParty = {};
-	for _,v in pairs(DB.getChildren("partysheet.partyinformation")) do
+	for _,v in pairs(PartyManager.getPartyNodes()) do
 		local sClass, sRecord = DB.getValue(v, "link");
 		if sClass == "charsheet" and sRecord then
 			local nodePC = DB.findNode(sRecord);
