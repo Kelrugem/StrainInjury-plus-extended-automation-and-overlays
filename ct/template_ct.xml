@@ -19,7 +19,7 @@
 			</script>
 		</number_ct_static>
 	</template>
-	<template name="number_clientct_wounds" merge="replace">
+	<template name="number_clientct_wounds">
 		<number_ct_static name="wounds">
 			<anchored to="injury" width="30" height="20">
 				<top />
@@ -36,7 +36,7 @@
 		<number_ct_static name="wounds">
 		</number_ct_static>
 	</template> 
-	<template name="number_clientct_hptemp" merge="replace">
+	<template name="number_clientct_hptemp">
 		<number_ct_static name="hptemp">
 			<anchored to="wounds" width="30" height="20">
 				<top />
