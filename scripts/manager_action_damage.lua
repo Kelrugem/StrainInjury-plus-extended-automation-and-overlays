@@ -53,6 +53,12 @@ function handleApplyDamage(msgOOB)
 	local bSFortif = {};
 	local MaxFortifMod = {};
 	local bPFMode = DataCommon.isPFRPG();
+	-- KEL BCE support
+	if AdvancedEffects then
+		rSource.nodeItem = msgOOB.nodeItem;
+ 		rSource.nodeAmmo = msgOOB.nodeAmmo;
+ 		rSource.nodeWeapon = msgOOB.nodeWeapon;
+	end
 
 	-- if string.match(rMessage.text, "%[DAMAGE") then
 	local rDamageOutput = ActionDamage.decodeDamageText(nTotal, msgOOB.sDamage);
@@ -227,7 +233,7 @@ function handleApplyDamage(msgOOB)
 					for _,vUser in ipairs(User.getActiveUsers()) do
 						if vUser == sOwner then
 							for _,vIdentity in ipairs(User.getActiveIdentities(vUser)) do
-								if nodeTarget.getName() == vIdentity then
+								if DB.getName(nodeTarget) == vIdentity then
 									msgOOB.type = OOB_MSGTYPE_APPLYTDMG;
 									Comm.deliverOOBMessage(msgOOB, sOwner);
 									return;
@@ -268,6 +274,12 @@ function notifyApplyDamage(rSource, rTarget, bSecret, sRollType, sDesc, nTotal, 
 	msgOOB.sSourceNode = ActorManager.getCreatureNodeName(rSource);
 	msgOOB.sTargetNode = ActorManager.getCreatureNodeName(rTarget);
 	msgOOB.nTargetOrder = rTarget.nOrder;
+	-- KEL BCE support
+	if AdvancedEffects then
+		msgOOB.nodeItem = rSource.nodeItem;
+		msgOOB.nodeAmmo = rSource.nodeAmmo;
+		msgOOB.nodeWeapon = rSource.nodeWeapon;
+	end
 
 	Comm.deliverOOBMessage(msgOOB, "");
 end
@@ -2340,7 +2352,7 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 					local aActualDamageTypes = StringManager.split(table.concat(aTempDamageTypes, ","), ",", true);
 					
 					-- Check target's effects for regeneration effects that match
-					for _,v in pairs(DB.getChildren(nodeTargetCT, "effects")) do
+					for _,v in ipairs(DB.getChildList(nodeTargetCT, "effects")) do
 						local nActive = DB.getValue(v, "isactive", 0);
 						if (nActive == 1) then
 							local bMatch = false;
