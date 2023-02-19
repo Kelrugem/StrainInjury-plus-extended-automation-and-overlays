@@ -60,7 +60,7 @@ function linkPCFields(nodePS)
 	PartyManager.linkRecordField(nodeChar, nodePS, "defenses.damagereduction", "string", "dr");
 	PartyManager.linkRecordField(nodeChar, nodePS, "defenses.sr.total", "number", "sr");
 
-	linkPCClasses(DB.getChild(nodeChar, "classes"));
-	linkPCSkills(DB.getChild(nodeChar, "skilllist"));
-	linkPCLanguages(DB.getChild(nodeChar, "languagelist"));
+	PartyManager2.linkPCClasses(DB.getChild(nodeChar, "classes"));
+	PartyManager2.linkPCSkills(DB.getChild(nodeChar, "skilllist"));
+	PartyManager2.linkPCLanguages(DB.getChild(nodeChar, "languagelist"));
 end
