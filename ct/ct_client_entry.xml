@@ -6,6 +6,7 @@
 -->
 
 <root>	
+	<!-- KEL In 3.5E this is in ct_client.xml -->
 	<windowclass name="client_ct_entry" merge="join">
 		<script file="ct/scripts/clientct_entry_dnd.lua" />
 		<sheetdata>

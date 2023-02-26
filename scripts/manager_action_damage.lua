@@ -2457,11 +2457,21 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 	end
 	
 	-- KEL Blood trails
-	if (OptionsManager.getOption("BLOOD") == "on") then
+	local sBloodOpt = OptionsManager.getOption("BLOOD");
+	if (sBloodOpt ~= "off") then
 		local nodeCT = ActorManager.getCTNode(rTarget);
-		if rDamageOutput.bInjury and rDamageOutput.nVal > 0 and not EffectManager35E.hasEffectCondition(rTarget, "noblood") then
-			local nBloodRatio = math.min(rDamageOutput.nVal / nTotalHP, 1);
-			ActionDamage.addBloodTrail(nodeCT, nBloodRatio);
+		local nBloodRatio = math.min(rDamageOutput.nVal / nTotalHP, 1);
+		if sBloodOpt == "injury" and rDamageOutput.bInjury then
+			if rDamageOutput.nVal > 0 and not EffectManager35E.hasEffectCondition(rTarget, "noblood") then
+				ActionDamage.addBloodTrail(nodeCT, nBloodRatio);
+			end
+		elseif sBloodOpt ~= "injury" then
+			local nBloodOpt = tonumber(sBloodOpt);
+			if math.random(100) <= nBloodOpt then
+				if rDamageOutput.nVal > 0 and not EffectManager35E.hasEffectCondition(rTarget, "noblood") then
+					ActionDamage.addBloodTrail(nodeCT, nBloodRatio);
+				end
+			end
 		end
 	end
 	-- END
@@ -2483,7 +2493,7 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 		TargetingManager.removeTarget(ActorManager.getCTNodeName(rSource), ActorManager.getCTNodeName(rTarget));
 	end
 end
--- KEL See addMarker in the ImageDeathMarkerManager
+-- KEL See addMarker and resolveMarker in the ImageDeathMarkerManager
 function addBloodTrail(nodeCT, nBloodRatio)
 	if not nodeCT then
 		return;
@@ -2494,7 +2504,7 @@ function addBloodTrail(nodeCT, nBloodRatio)
 		return;
 	end
 
-	local sAsset, sTint = ImageDeathMarkerManager.resolveMarker(nodeCT);
+	local sAsset, sTint = ActionDamage.resolveBloodMarker(nodeCT);
 	if (sAsset or "") == "" then
 		return;
 	end
@@ -2521,6 +2531,39 @@ function addBloodTrail(nodeCT, nBloodRatio)
 	y = y + hToken * ( yAdj/100 - 1/2 );
 	local nGridScale = nBloodRatio * wToken/gridlength;
 	Image.addLayerPaintStamp(sPath, nLayerID, { asset=sAsset, w=nGridScale, h=nGridScale, x=x, y=y, color=sTint });
+end
+
+function resolveBloodMarker(nodeCT)
+	local sType = ImageDeathMarkerManager.getCreatureType(nodeCT);
+	local tCreatureTypeMap = ImageDeathMarkerManager.getCreatureTypeMap();
+
+	local sSet = nil;
+	if (sType or "") ~= "" then
+		sSet = tCreatureTypeMap[sType];
+	end
+	if (sSet or "") == "" then
+		sSet = tCreatureTypeMap[""];
+	end
+	if (sSet or "") == "" then
+		return;
+	end
+	if not sSet:match("^Blood %-") then 
+		sSet = tCreatureTypeMap[""]; 
+		if not sSet:match("^Blood %-") then
+			sSet = "Blood - Red";
+		end
+	end
+
+	local tSets = ImageDeathMarkerManager.getSetMap();
+	local tSet = tSets[sSet];
+	if not tSet then
+		tSet = tSets[""];
+	end
+	if not tSet then
+		return "", nil;
+	end
+
+	return tSet[math.random(1, #tSet)], tSet.tint;
 end
 -- END
 function messageDamage(rSource, rTarget, bSecret, sDamageType, sDamageDesc, sTotal, sExtraResult)
