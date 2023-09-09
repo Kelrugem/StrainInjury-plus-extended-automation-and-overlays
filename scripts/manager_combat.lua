@@ -11,7 +11,10 @@ function onInit()
 	CombatManager.nextRound = CombatManagerKel.nextRound;
 	
 	CombatManager.rollStandardEntryInit = CombatManagerKel.rollStandardEntryInit;
-	CombatManager.deleteCombatant = CombatManagerKel.deleteCombatant;
+	
+	-- OlddeleteCombatant = CombatManager.deleteCombatant;
+	-- CombatManager.deleteCombatant = CombatManagerKel.deleteCombatant;
+	CombatManager.deleteCleanup = CombatManagerKel.deleteCleanup;
 end
 
 function nextActor(bSkipBell, bNoRoundAdvance)
@@ -40,15 +43,36 @@ function nextRound(nRounds)
 	-- END
 end
 
-function deleteCombatant(v)
+-- function deleteCombatant(v)
 	-- Perform any pre-delete activities
-	CombatManager.onPreDeleteCombatantEvent(v);
+	-- CombatManager.onPreDeleteCombatantEvent(v);
 
+	-- Clear any effects first, so that saves aren't triggered when initiative advanced
+	-- DB.deleteChildren(v, "effects");
+
+	-- Clear NPC wounds, so that ruleset turn end dying checks aren't triggered when initiative advanced
+	-- if not CombatManager.isPC(v) and DB.getChild(v, "wounds") then
+		-- DB.setValue(v, "wounds", "number", 0);
+		-- KEL
+		-- DB.setValue(v, "injury", "number", 0);
+		-- END
+	-- end
+
+	-- Move to the next actor, if this CT entry is active
+	-- if CombatManager.isActive(v) then
+		-- CombatManager.nextActor();
+	-- end
+
+	-- Delete the database node and close the window
+	-- DB.deleteNode(v);
+-- end
+
+function deleteCleanup(v)
 	-- Clear any effects first, so that saves aren't triggered when initiative advanced
 	DB.deleteChildren(v, "effects");
 
 	-- Clear NPC wounds, so that ruleset turn end dying checks aren't triggered when initiative advanced
-	if not CombatManager.isPC(v) and DB.getChild(v, "wounds") then
+	if not CombatManager.isPlayerCT(v) and DB.getChild(v, "wounds") then
 		DB.setValue(v, "wounds", "number", 0);
 		-- KEL
 		DB.setValue(v, "injury", "number", 0);
@@ -59,9 +83,6 @@ function deleteCombatant(v)
 	if CombatManager.isActive(v) then
 		CombatManager.nextActor();
 	end
-
-	-- Delete the database node and close the window
-	DB.deleteNode(v);
 end
 
 function rollStandardEntryInit(tInit)
@@ -93,8 +114,7 @@ function rollStandardEntryInit(tInit)
 	-- END
 
 	-- For PCs, we always roll unique initiative
-	local sClass, sRecord = DB.getValue(tInit.nodeEntry, "link", "", "");
-	if sClass == "charsheet" then
+	if CombatManager.isPlayerCT(tInit.nodeEntry) then
 		-- KEL FFOS
 		local nInitResult = CombatManager.helperRollRandomInit(tInit);
 		DB.setValue(tInit.nodeEntry, "initresult", "number", nInitResult);
