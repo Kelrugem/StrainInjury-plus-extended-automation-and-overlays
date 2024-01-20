@@ -1048,7 +1048,7 @@ function checkConditionalHelper(rActor, sEffect, rTarget, aIgnore, rEffectSpell)
 	
 	-- KEl Adding TurboManager Support
 	local aEffects = {};
-	if TurboManager then
+	if TurboManager and sEffect ~= "nodex" then
 		aEffects = TurboManager.getMatchedEffects(rActor, sEffect);
 	else
 		aEffects = DB.getChildList(ActorManager.getCTNode(rActor), "effects");
