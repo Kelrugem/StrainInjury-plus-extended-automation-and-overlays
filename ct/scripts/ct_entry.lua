@@ -22,6 +22,8 @@ function onHealthChanged()
 end
 
 function linkPCFields()
+	super.linkPCFields();
+	
 	local nodeChar = link.getTargetDatabaseNode();
 	if nodeChar then
 		name.setLink(DB.createChild(nodeChar, "name", "string"), true);
