@@ -22,7 +22,7 @@ function onHealthChanged()
 end
 
 function linkPCFields()
-	super.linkPCFields();
+	super.super.linkPCFields();
 	
 	local nodeChar = link.getTargetDatabaseNode();
 	if nodeChar then
