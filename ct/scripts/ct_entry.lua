@@ -22,7 +22,11 @@ function onHealthChanged()
 end
 
 function linkPCFields()
-	super.super.linkPCFields();
+	if UDGCoreRPGCombatHighlighterHelper then
+		super.super.super.linkPCFields();
+	else
+		super.super.linkPCFields();
+	end
 	
 	local nodeChar = link.getTargetDatabaseNode();
 	if nodeChar then
