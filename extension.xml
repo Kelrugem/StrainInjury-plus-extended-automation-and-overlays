@@ -3,7 +3,7 @@
 <root version="3.0">
 	<properties>
 		<name>Feature: StrainInjury plus extended automation and overlays</name>
-		<version>4.4.9</version>
+		<version>4.5.0</version>
 		<author>rhythmist, mr900rr, darrenan, tahl_liadon, bmos, DCrumb, RabidPaladin, SoxMax, Cristmo, rhagelstrom, rogervinc and Kelrugem</author>
 		<description>Adds support for the Strain and Injury HP Variant rules and more to the 3.5E and PFRPG rulesets.</description>
 		<ruleset>
@@ -14,7 +14,7 @@
 		</ruleset>
 		<loadorder>36</loadorder>
 	</properties>
-	<announcement text="Strain and Injury HP Variant Rules, dated at 20 January 2024, and more for 3.5E and PFRPG rulesets, v. 4.4.9. Copyright 2024 Smiteworks.\rBy darrenan, mr900rr, phixation, tahl_liadon, bmos, DCrumb, RabidPaladin, SoxMax, Cristmo, rhagelstrom, rogervinc and Kelrugem." icon="DeekinMightyBard" font="emotefont" />
+	<announcement text="Strain and Injury HP Variant Rules, dated at 10 March 2024, and more for 3.5E and PFRPG rulesets, v. 4.5.0. Copyright 2024 Smiteworks.\rBy darrenan, mr900rr, phixation, tahl_liadon, bmos, DCrumb, RabidPaladin, SoxMax, Cristmo, rhagelstrom, rogervinc and Kelrugem." icon="DeekinMightyBard" font="emotefont" />
 	<base>
 		<icon name="DeekinMightyBard" file="DeekinMightyBard.jpg" />
 		<!-- Graphics -->
@@ -72,6 +72,7 @@
 		<script name="ActionHeal" file="scripts/manager_action_heal.lua" />
 		<script name="ActionSave" file="scripts/manager_action_save.lua" />
 		<script name="ActionSpell" file="scripts/manager_action_spell.lua" />
+		<script name="ActionSkill2" file="scripts/manager_action_skill.lua" />
 
 		<!-- Effect Builder -->
 		<includefile source="effect_builder/editor_loader.xml" />
