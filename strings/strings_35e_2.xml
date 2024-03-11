@@ -6,7 +6,7 @@
 -->
 
 <root>
-
+	
 	<!-- Combat Tracker -->
 	<string name="ct_label_strain">Strn</string>
 	<string name="ct_label_injury">Inj</string>
@@ -72,8 +72,8 @@
 	<string name="short">Short Rest</string>
 	<string name="nomnom">Consumable (no reset by nom nom!)</string>
 	<string name="thirdcl">CL/3</string>
-	<string name="tooltip_saves_clear_toolbar">Clear Save Overlays</string>
-	<string name="tooltip_wounds_clear_toolbar">Clear Wound Overlays</string>
+	<string name="tooltip_clearsaves">Clear Save Overlays</string>
+	<string name="tooltip_clearwounds">Clear Wound Overlays</string>
 	<!-- <string name="totallvl">LVL</string> -->
 	<!-- End -->
 	
