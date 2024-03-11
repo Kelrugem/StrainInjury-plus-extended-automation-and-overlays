@@ -12,16 +12,16 @@ function onTabletopInit()
     ToolbarManager.registerButton("clearwounds",
         {
             sType = "action",
-            sIcon = "button_clearwounds",
-            sTooltipRes = "tooltip_clearwounds",
+            sIcon = "tool_clearwounds",
+            sTooltipRes = "image_tooltip_clearwounds",
 			bHostVisibleOnly = true,
             fnActivate = clearWounds,
         });
     ToolbarManager.registerButton("clearsaves",
         {
             sType = "action",
-            sIcon = "button_clearsaves",
-            sTooltipRes = "tooltip_clearsaves",
+            sIcon = "tool_clearsaves",
+            sTooltipRes = "image_tooltip_clearsaves",
 			bHostVisibleOnly = true,
             fnActivate = clearSaves,
         });
