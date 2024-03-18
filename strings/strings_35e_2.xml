@@ -72,8 +72,8 @@
 	<string name="short">Short Rest</string>
 	<string name="nomnom">Consumable (no reset by nom nom!)</string>
 	<string name="thirdcl">CL/3</string>
-	<string name="image_tooltip_clearsaves">Clear Save Overlays</string>
-	<string name="image_tooltip_clearwounds">Clear Wound Overlays</string>
+	<string name="image_tooltip_toolbarclearsaves">Clear Save Overlays</string>
+	<string name="image_tooltip_toolbarclearwounds">Clear Wound Overlays</string>
 	<!-- <string name="totallvl">LVL</string> -->
 	<!-- End -->
 	

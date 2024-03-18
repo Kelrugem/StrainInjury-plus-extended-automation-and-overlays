@@ -13,19 +13,18 @@
 					<!-- super.onInit() -->
 				<!-- end -->
 				
-				<!-- local tOverlayButtons = {"", "clear_wounds", "clear_saves"}; -->
-				<!-- ToolbarManager.addList(subwindow, tOverlayButtons, "right"); -->
+				<!-- local tOverlayButtons = {"", "image_clearwounds", "image_clearsaves"}; -->
+				<!-- ToolbarManager.addList(self, tOverlayButtons, "right"); -->
 			<!-- end -->
 		<!-- </script> -->
 		<sheetdata>
-			<toolbar_separator_right name="image_separator_rightToOverlays" />
-			
-			<toolbar_toggle_right name="image_clearwounds">
+			<toolbar_separator_right name="image_separator_custom" />
+			<toolbar_action_right name="image_clearwounds">
 				<initbyname />
-			</toolbar_toggle_right>
-			<toolbar_toggle_right name="image_clearsaves">
+			</toolbar_action_right>
+			<toolbar_action_right name="image_clearsaves">
 				<initbyname />
-			</toolbar_toggle_right>
+			</toolbar_action_right>
 		</sheetdata>
 	</windowclass>
 </root>

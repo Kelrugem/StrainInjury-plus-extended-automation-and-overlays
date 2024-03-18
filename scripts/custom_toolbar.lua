@@ -9,20 +9,20 @@
 -- end
 
 function onTabletopInit()
-    ToolbarManager.registerButton("clearwounds",
+    ToolbarManager.registerButton("image_clearwounds",
         {
             sType = "action",
             sIcon = "tool_clearwounds",
-            sTooltipRes = "image_tooltip_clearwounds",
-			bHostVisibleOnly = true,
+            sTooltipRes = "image_tooltip_toolbarclearwounds",
+			-- bHostVisibleOnly = true,
             fnActivate = clearWounds,
         });
-    ToolbarManager.registerButton("clearsaves",
+    ToolbarManager.registerButton("image_clearsaves",
         {
             sType = "action",
             sIcon = "tool_clearsaves",
-            sTooltipRes = "image_tooltip_clearsaves",
-			bHostVisibleOnly = true,
+            sTooltipRes = "image_tooltip_toolbarclearsaves",
+			-- bHostVisibleOnly = true,
             fnActivate = clearSaves,
         });
 		
@@ -32,7 +32,9 @@ end
 
 function clearWounds()	
 	for _,v in pairs(CombatManager.getCombatantNodes()) do	
-		TokenManager3.setDeathOverlay(v,0, true); 	
+		TokenManager3.setDeathOverlay(v,0, true); 
+		updateDisplay();
+		Debug.chat("BUTTON PUSHED");		
 	end
 	-- function updateDisplay()	
 	-- end
