@@ -14,7 +14,7 @@ function onTabletopInit()
             sType = "action",
             sIcon = "tool_clearwounds",
             sTooltipRes = "image_tooltip_toolbarclearwounds",
-			-- bHostVisibleOnly = true,
+			bHostVisibleOnly = true,
             fnActivate = clearWounds,
         });
     ToolbarManager.registerButton("image_clearsaves",
@@ -22,7 +22,7 @@ function onTabletopInit()
             sType = "action",
             sIcon = "tool_clearsaves",
             sTooltipRes = "image_tooltip_toolbarclearsaves",
-			-- bHostVisibleOnly = true,
+			bHostVisibleOnly = true,
             fnActivate = clearSaves,
         });
 		
@@ -30,18 +30,19 @@ function onTabletopInit()
 	-- ToolbarManager.addList(subwindow, tOverlayButtons, "right");
 end
 
-function clearWounds()	
+function clearWounds(c)	
+	local cImage = WindowManager.callOuterWindowFunction(c.window, "getImage");
 	for _,v in pairs(CombatManager.getCombatantNodes()) do	
-		TokenManager3.setDeathOverlay(v,0, true); 
-		updateDisplay();
-		Debug.chat("BUTTON PUSHED");		
+		TokenManager3.setDeathOverlay(v,0, true); 	
 	end
-	-- function updateDisplay()	
-	-- end
+	cImage.setFocus();
+	-- c.window.updateDisplay();
 end
 
-function clearSaves()	
+function clearSaves(c)	
+	local cImage = WindowManager.callOuterWindowFunction(c.window, "getImage");
 	for _,v in pairs(CombatManager.getCombatantNodes()) do	
 		TokenManager3.setSaveOverlay(v,0, true); 	
 	end	
+	cImage.setFocus();
 end
