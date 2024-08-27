@@ -112,9 +112,9 @@ function onHealthChanged()
 	local sColor;
 	-- KEL adding >= in first line; but still, this part is not completely "correct" due to new nonlethal handling which can not be respected without an overwrite
 	if nPercentWounded <= 1 and nPercentNonlethal >= 1 then
-		sColor = ColorManager.COLOR_HEALTH_UNCONSCIOUS;
+		sColor = ColorManager.getUIColor("health_unconscious");
 	elseif nPercentWounded == 1 or nPercentNonlethal == 1 then
-		sColor = ColorManager.COLOR_HEALTH_SIMPLE_BLOODIED;
+		sColor = ColorManager.getUIColor("health_simple_bloodied");
 	else
 		sColor = ColorManager.getHealthColor(nPercentWounded, true);
 	end
