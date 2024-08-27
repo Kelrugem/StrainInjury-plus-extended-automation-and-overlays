@@ -14,7 +14,11 @@ end
 
 function performConcentrationCheck(draginfo, rActor, nodeSpellClass)
 	if DataCommon.isPFRPG() then
-		local rRoll = { sType = "concentration", sDesc = "[CONCENTRATION]", aDice = { "d20" } };
+		local rRoll = {
+			sType = "concentration",
+			sDesc = "[CONCENTRATION]",
+		};
+		rRoll.aDice = DiceRollManager.getActorDice({ "d20" }, rActor);
 	
 		local sAbility = DB.getValue(nodeSpellClass, "dc.ability", "");
 		local sAbilityEffect = DataCommon.ability_ltos[sAbility];
@@ -98,7 +102,7 @@ function getStabilizationRoll(rActor)
 	local rRoll = { sType = "stabilization", sDesc = "[STABILIZATION]" };
 	
 	if DataCommon.isPFRPG() then
-		rRoll.aDice = { "d20" };
+		rRoll.aDice = DiceRollManager.getActorDice({ "d20" }, rActor);
 		rRoll.nMod = ActorManager35E.getAbilityBonus(rActor, "constitution");
 		
 		local nHP = 0;
@@ -122,7 +126,7 @@ function getStabilizationRoll(rActor)
 		end
 	
 	else
-		rRoll.aDice = { "d100" };
+		rRoll.aDice = DiceRollManager.getActorDice({ "d100" }, rActor);
 		rRoll.nMod = 0;
 	end
 	

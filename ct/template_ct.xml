@@ -42,8 +42,13 @@
 				<top />
 				<right anchor="left" offset="-10" />
 			</anchored>
-			<color>0000AA</color>
 			<script>
+				function onInit()
+					if super and super.onInit then
+						super.onInit();
+					end
+					setColor(ColorManager.getUIColor("health_shield"));
+				end
 				function onValueChanged()
 					window.onHealthChanged();
 				end
