@@ -264,72 +264,62 @@ function getAbilityScore(rActor, sAbility)
 	if not sAbility then
 		return -1;
 	end
-	local sNodeType, nodeActor = ActorManager.getTypeAndNode(rActor);
+	local nodeActor = ActorManager.getCreatureNode(rActor);
 	if not nodeActor then
 		return 0;
 	end
-	
-	local nStatScore = -1;
-	
-	local sShort = string.sub(string.lower(sAbility), 1, 3);
-	if sNodeType == "pc" then
+
+	local sShort = sAbility:sub(1,3):lower();
+	if ActorManager.isPC(rActor) then
 		if sShort == "lev" then
-			nStatScore = DB.getValue(nodeActor, "level", 0);
+			return DB.getValue(nodeActor, "level", 0);
 		elseif sShort == "bab" then
-			nStatScore = DB.getValue(nodeActor, "attackbonus.base", 0);
+			return DB.getValue(nodeActor, "attackbonus.base", 0);
 		elseif sShort == "cmb" then
-			nStatScore = DB.getValue(nodeActor, "attackbonus.base", 0);
+			return DB.getValue(nodeActor, "attackbonus.base", 0);
 		elseif sShort == "str" then
-			nStatScore = DB.getValue(nodeActor, "abilities.strength.score", 0);
+			return DB.getValue(nodeActor, "abilities.strength.score", 0);
 		elseif sShort == "dex" then
-			nStatScore = DB.getValue(nodeActor, "abilities.dexterity.score", 0);
+			return DB.getValue(nodeActor, "abilities.dexterity.score", 0);
 		elseif sShort == "con" then
-			nStatScore = DB.getValue(nodeActor, "abilities.constitution.score", 0);
+			return DB.getValue(nodeActor, "abilities.constitution.score", 0);
 		elseif sShort == "int" then
-			nStatScore = DB.getValue(nodeActor, "abilities.intelligence.score", 0);
+			return DB.getValue(nodeActor, "abilities.intelligence.score", 0);
 		elseif sShort == "wis" then
-			nStatScore = DB.getValue(nodeActor, "abilities.wisdom.score", 0);
+			return DB.getValue(nodeActor, "abilities.wisdom.score", 0);
 		elseif sShort == "cha" then
-			nStatScore = DB.getValue(nodeActor, "abilities.charisma.score", 0);
+			return DB.getValue(nodeActor, "abilities.charisma.score", 0);
 		end
 	elseif ActorManager.isRecordType(rActor, "npc") then
 		if sShort == "lev" then
-			nStatScore = tonumber(string.match(DB.getValue(nodeActor, "hd", ""), "^(%d+)")) or 0;
+			return tonumber(string.match(DB.getValue(nodeActor, "hd", ""), "^(%d+)")) or 0;
 		elseif sShort == "bab" then
-			nStatScore = 0;
-
 			local sBABGrp = DB.getValue(nodeActor, "babgrp", "");
 			local sBAB = sBABGrp:match("[+-]?%d+");
-			if sBAB then
-				nStatScore = tonumber(sBAB) or 0;
-			end
+			return tonumber(sBAB) or 0;
 		elseif sShort == "cmb" then
-			nStatScore = 0;
-
 			local sBABGrp = DB.getValue(nodeActor, "babgrp", "");
 			local sBAB = sBABGrp:match("CMB ([+-]?%d+)");
 			if not sBAB then
 				sBAB = sBABGrp:match("[+-]?%d+");
 			end
-			if sBAB then
-				nStatScore = tonumber(sBAB) or 0;
-			end
+			return tonumber(sBAB) or 0;
 		elseif sShort == "str" then
-			nStatScore = DB.getValue(nodeActor, "strength", 0);
+			return DB.getValue(nodeActor, "strength", 0);
 		elseif sShort == "dex" then
-			nStatScore = DB.getValue(nodeActor, "dexterity", 0);
+			return DB.getValue(nodeActor, "dexterity", 0);
 		elseif sShort == "con" then
-			nStatScore = DB.getValue(nodeActor, "constitution", 0);
+			return DB.getValue(nodeActor, "constitution", 0);
 		elseif sShort == "int" then
-			nStatScore = DB.getValue(nodeActor, "intelligence", 0);
+			return DB.getValue(nodeActor, "intelligence", 0);
 		elseif sShort == "wis" then
-			nStatScore = DB.getValue(nodeActor, "wisdom", 0);
+			return DB.getValue(nodeActor, "wisdom", 0);
 		elseif sShort == "cha" then
-			nStatScore = DB.getValue(nodeActor, "charisma", 0);
+			return DB.getValue(nodeActor, "charisma", 0);
 		end
 	end
-	
-	return nStatScore;
+
+	return -1;
 end
 
 function getAbilityBonus(rActor, sAbility)
@@ -363,19 +353,21 @@ function getAbilityBonus(rActor, sAbility)
 	end
 	
 	if StringManager.contains(DataCommon.abilities, sStat) then
-		local sNodeType, nodeActor = ActorManager.getTypeAndNode(rActor);
-		if nodeActor and (sNodeType == "pc") then
-			nStatVal = nStatVal + DB.getValue(nodeActor, "abilities." .. sStat .. ".bonusmodifier", 0);
-			
-			local nAbilityDamage = DB.getValue(nodeActor, "abilities." .. sStat .. ".damage", 0);
-			if DataCommon.isPFRPG() then
-				if nAbilityDamage >= 0 then
-					nAbilityDamage = math.floor(nAbilityDamage / 2) * 2;
-				else
-					nAbilityDamage = math.ceil(nAbilityDamage / 2) * 2;
+		if ActorManager.isPC(rActor) then
+			local nodeActor = ActorManager.getCreatureNode(rActor);
+			if nodeActor then
+				nStatVal = nStatVal + DB.getValue(nodeActor, "abilities." .. sStat .. ".bonusmodifier", 0);
+
+				local nAbilityDamage = DB.getValue(nodeActor, "abilities." .. sStat .. ".damage", 0);
+				if DataCommon.isPFRPG() then
+					if nAbilityDamage >= 0 then
+						nAbilityDamage = math.floor(nAbilityDamage / 2) * 2;
+					else
+						nAbilityDamage = math.ceil(nAbilityDamage / 2) * 2;
+					end
 				end
+				nStatScore = nStatScore - nAbilityDamage;
 			end
-			nStatScore = nStatScore - nAbilityDamage;
 		end
 		nStatVal = nStatVal + math.floor((nStatScore - 10) / 2);
 	else
@@ -399,74 +391,76 @@ end
 --
 
 function getSpellDefense(rActor)
-	local sNodeType, nodeActor = ActorManager.getTypeAndNode(rActor);
-	if not nodeActor then
-		return 0;
+	if ActorManager.isPC(rActor) then
+		local nodeActor = ActorManager.getCreatureNode(rActor);
+		if nodeActor then
+			return DB.getValue(nodeActor, "defenses.sr.total", 0);
+		end
+	elseif ActorManager.isRecordType(rActor, "npc") then
+		local nodeCT = ActorManager.getCTNode(rActor);
+		if nodeCT then
+			return DB.getValue(nodeActor, "sr", 0);
+		end
+		local nodeActor = ActorManager.getCreatureNode(rActor);
+		if nodeActor then
+			local sSpecialQualities = DB.getValue(nodeActor, "specialqualities", ""):lower();
+			local sSpellResist = sSpecialQualities:match("spell resistance (%d+)");
+			if not sSpellResist then
+				sSpellResist = sSpecialQualities:match("sr (%d+)");
+			end
+			if sSpellResist then
+				return tonumber(sSpellResist) or 0;
+			end
+		end
 	end
 
-	local nSR = 0;
-	if sNodeType == "pc" then
-		nSR = DB.getValue(nodeActor, "defenses.sr.total", 0);
-	elseif sNodeType == "ct" then
-		nSR = DB.getValue(nodeActor, "sr", 0);
-	elseif sNodeType == "npc" then
-		local sSpecialQualities = string.lower(DB.getValue(nodeActor, "specialqualities", ""));
-		local sSpellResist = string.match(sSpecialQualities, "spell resistance (%d+)");
-		if not sSpellResist then
-			sSpellResist = string.match(sSpecialQualities, "sr (%d+)");
-		end
-		if sSpellResist then
-			nSR = tonumber(sSpellResist) or 0;
-		end
-	end
-	
-	return nSR;
+	return 0;
 end
 
 function getArmorComps(rActor)
-	local sNodeType, nodeActor = ActorManager.getTypeAndNode(rActor);
+	local nodeActor = ActorManager.getCreatureNode(rActor);
 	if not nodeActor then
 		return {};
 	end
 
-	local aComps = {};
-	
-	if sNodeType == "pc" then
+	local tComps = {};
+
+	if ActorManager.isPC(rActor) then
 		local nACBonusComp = DB.getValue(nodeActor, "ac.sources.armor", 0);
 		if nACBonusComp ~= 0 then
-			aComps["armor"] = nACBonusComp;
+			tComps["armor"] = nACBonusComp;
 		end
 		nACBonusComp = DB.getValue(nodeActor, "ac.sources.shield", 0);
 		if nACBonusComp ~= 0 then
-			aComps["shield"] = nACBonusComp;
+			tComps["shield"] = nACBonusComp;
 		end
 		local sAbility = DB.getValue(nodeActor, "ac.sources.ability", "");
 		if DataCommon.ability_ltos[sAbility] then
-			aComps[DataCommon.ability_ltos[sAbility]] = getAbilityBonus(rActor, sAbility);
+			tComps[DataCommon.ability_ltos[sAbility]] = getAbilityBonus(rActor, sAbility);
 		end
 		local sAbility2 = DB.getValue(nodeActor, "ac.sources.ability2", "");
 		if DataCommon.ability_ltos[sAbility2] then
-			aComps[DataCommon.ability_ltos[sAbility2]] = getAbilityBonus(rActor, sAbility2);
+			tComps[DataCommon.ability_ltos[sAbility2]] = getAbilityBonus(rActor, sAbility2);
 		end
 		nACBonusComp = DB.getValue(nodeActor, "ac.sources.size", 0);
 		if nACBonusComp ~= 0 then
-			aComps["size"] = nACBonusComp;
+			tComps["size"] = nACBonusComp;
 		end
 		nACBonusComp = DB.getValue(nodeActor, "ac.sources.naturalarmor", 0);
 		if nACBonusComp ~= 0 then
-			aComps["natural"] = nACBonusComp;
+			tComps["natural"] = nACBonusComp;
 		end
 		nACBonusComp = DB.getValue(nodeActor, "ac.sources.deflection", 0);
 		if nACBonusComp ~= 0 then
-			aComps["deflection"] = nACBonusComp;
+			tComps["deflection"] = nACBonusComp;
 		end
 		nACBonusComp = DB.getValue(nodeActor, "ac.sources.dodge", 0);
 		if nACBonusComp ~= 0 then
-			aComps["dodge"] = nACBonusComp;
+			tComps["dodge"] = nACBonusComp;
 		end
 		nACBonusComp = DB.getValue(nodeActor, "ac.sources.misc", 0);
 		if nACBonusComp ~= 0 then
-			aComps["misc"] = nACBonusComp;
+			tComps["misc"] = nACBonusComp;
 		end
 	elseif ActorManager.isRecordType(rActor, "npc") then
 		local sAC = DB.getValue(nodeActor, "ac", ""):lower();
@@ -486,27 +480,27 @@ function getArmorComps(rActor)
 					sACCompType = StringManager.trim(sACCompType);
 					
 					if DataCommon.actypes[sACCompType] then
-						aComps[DataCommon.actypes[sACCompType]] = nACCompBonus;
+						tComps[DataCommon.actypes[sACCompType]] = nACCompBonus;
 						nCompTotal = nCompTotal + nACCompBonus;
 					elseif StringManager.contains (DataCommon.acarmormatch, sACCompType) then
-						aComps["armor"] = nACCompBonus;
+						tComps["armor"] = nACCompBonus;
 						nCompTotal = nCompTotal + nACCompBonus;
 					elseif StringManager.contains (DataCommon.acshieldmatch, sACCompType) then
-						aComps["shield"] = nACCompBonus;
+						tComps["shield"] = nACCompBonus;
 						nCompTotal = nCompTotal + nACCompBonus;
 					elseif StringManager.contains (DataCommon.acdeflectionmatch, sACCompType) then
-						aComps["deflection"] = nACCompBonus;
+						tComps["deflection"] = nACCompBonus;
 						nCompTotal = nCompTotal + nACCompBonus;
 					end
 				end
 			end
 		end
 		if nCompTotal ~= nAC then
-			aComps["misc"] = nAC - nCompTotal;
+			tComps["misc"] = nAC - nCompTotal;
 		end
 	end
 
-	return aComps;
+	return tComps;
 end
 
 function getDefenseValue(rAttacker, rDefender, rRoll)
