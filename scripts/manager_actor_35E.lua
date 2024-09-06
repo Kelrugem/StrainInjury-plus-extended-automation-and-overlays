@@ -399,7 +399,7 @@ function getSpellDefense(rActor)
 	elseif ActorManager.isRecordType(rActor, "npc") then
 		local nodeCT = ActorManager.getCTNode(rActor);
 		if nodeCT then
-			return DB.getValue(nodeActor, "sr", 0);
+			return DB.getValue(nodeCT, "sr", 0);
 		end
 		local nodeActor = ActorManager.getCreatureNode(rActor);
 		if nodeActor then
@@ -413,7 +413,6 @@ function getSpellDefense(rActor)
 			end
 		end
 	end
-
 	return 0;
 end
 
