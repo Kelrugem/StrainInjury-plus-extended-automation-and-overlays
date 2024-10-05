@@ -4,13 +4,17 @@
 --
 
 function onInit()
+	-- KEL
 	super.super.onInit();
 	-- KEL Darrenan had here onFactionChanged(); Why?
 	self.onHealthChanged();
+	-- END
 end
 
 function onFactionChanged()
+	-- KEL
 	super.super.onFactionChanged();
+	-- END
 	updateHealthDisplay();
 end
 
@@ -21,9 +25,11 @@ function onHealthChanged()
 	if wounds then
 		wounds.setColor(sColor);
 	end
+	-- KEL
     if injury then
 		injury.setColor(sColor);
 	end
+	-- END
 	status.setColor(sColor);
 end
 
@@ -34,51 +40,25 @@ function updateHealthDisplay()
 	else
 		sOption = OptionsManager.getOption("SHNPC");
 	end
-	
-	if sOption == "detailed" then
-		if hp then
-			hp.setVisible(true);
-		end
-		if hptemp then
-			hptemp.setVisible(true);
-		end
-		if wounds then
-			wounds.setVisible(true);
-		end
-		if injury then
-			injury.setVisible(true);
-		end
-		
-		status.setVisible(false);
-	elseif sOption == "status" then
-		if hp then
-			hp.setVisible(false);
-		end
-		if hptemp then
-			hptemp.setVisible(false);
-		end
-		if wounds then
-			wounds.setVisible(false);
-		end
-		if injury then
-			injury.setVisible(false);
-		end
-		
-		status.setVisible(true);
-	else
-		if hp then
-			hp.setVisible(false);
-		end
-		if hptemp then
-			hptemp.setVisible(false);
-		end
-		if wounds then
-			wounds.setVisible(false);
-		end
-		if injury then
-			injury.setVisible(false);
-		end
-		
-		status.setVisible(false);
+
+	local bShowDetail = (sOption == "detailed");
+	local bShowStatus = (sOption == "status");
+
+	status.setVisible(bShowStatus);
+	if hp then
+		hp.setVisible(bShowDetail);
 	end
+	if hptemp then
+		hptemp.setVisible(bShowDetail);
+	end
+	-- KEL
+	if injury then
+		injury.setVisible(bShowDetail);
+	end
+	-- END
+	if wounds then
+		wounds.setVisible(bShowDetail);
+	end
+	local bShowHealthBase = not OptionsManager.isOption("SHPC", "off") or not OptionsManager.isOption("SHNPC", "off");
+	healthbase.setVisible(bShowHealthBase);
 end
