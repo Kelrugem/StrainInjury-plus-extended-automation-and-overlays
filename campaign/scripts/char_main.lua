@@ -4,20 +4,47 @@
 --
 
 function onInit()
-	onLevelChanged();
-	DB.addHandler(DB.getPath(getDatabaseNode(), "classes"), "onChildUpdate", onLevelChanged);
+	self.onLevelChanged();
+	self.onSystemChanged();
+	self.onLockModeChanged(WindowManager.getWindowReadOnlyState(self));
 
-	onSystemChanged();
+	DB.addHandler(DB.getPath(getDatabaseNode(), "classes"), "onChildUpdate", self.onLevelChanged);
+end
+function onClose()
+	DB.removeHandler(DB.getPath(getDatabaseNode(), "classes"), "onChildUpdate", self.onLevelChanged);
 end
 
-function onClose()
-	DB.removeHandler(DB.getPath(getDatabaseNode(), "classes"), "onChildUpdate", onLevelChanged);
+function onLockModeChanged(bReadOnly)
+	local tFieldsAbility = { "strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma", };
+	local tFieldsAbilityBonus = { "strengthbonus", "dexteritybonus", "constitutionbonus", "intelligencebonus", "wisdombonus", "charismabonus", };
+	local tFieldsAbilityDamage = { "strengthdamage", "dexteritydamage", "constitutiondamage", "intelligencedamage", "wisdomdamage", "charismadamage", };
+	local tFieldsHealth = { "hp", "wounds", "hptemp", "nonlethal", };
+	local tFieldsOther = { "speedfinal", "speedspecial", "senses", };
+
+	WindowManager.callSafeControlsSetLockMode(self, tFieldsAbility, bReadOnly);
+	WindowManager.callSafeControlsSetLockMode(self, tFieldsAbilityBonus, bReadOnly);
+	WindowManager.callSafeControlsSetLockMode(self, tFieldsAbilityDamage, bReadOnly);
+	WindowManager.callSafeControlsSetLockMode(self, tFieldsHealth, bReadOnly);
+	WindowManager.callSafeControlsSetLockMode(self, tFieldsOther, bReadOnly);
+
+	if UtilityManager.getTopWindow(self).getClass() == "charsheetmini" then
+		local tFieldsCombat = { "initiative", "melee", "ranged", "grapple", };
+		local tFieldsDefense = { "ac", "srfinal", "fortitude", "reflex", "will", };
+		WindowManager.callSafeControlsSetLockMode(self, tFieldsCombat, bReadOnly);
+		WindowManager.callSafeControlsSetLockMode(self, tFieldsDefense, bReadOnly);
+	else
+		local tFieldsTop = { "race", };
+		local tFieldsCombat = { "initiative", "meleemainattackbonus", "rangedmainattackbonus", "grappleattackbonus", }
+		local tFieldsDefense = { "dr", "ac", "spellresistance", "fortitude", "reflex", "will", };
+		WindowManager.callSafeControlsSetLockMode(self, tFieldsTop, bReadOnly);
+		WindowManager.callSafeControlsSetLockMode(self, tFieldsCombat, bReadOnly);
+		WindowManager.callSafeControlsSetLockMode(self, tFieldsDefense, bReadOnly);
+	end
 end
 
 function onLevelChanged()
 	CharManager.calcLevel(getDatabaseNode());
 end
-
 function onSystemChanged()
 	local bPFMode = DataCommon.isPFRPG();
 	
@@ -47,10 +74,10 @@ end
 
 function onHealthChanged()
 	local sColor = ActorManager35E.getPCSheetWoundColor(getDatabaseNode());
+	wounds.setColor(sColor);
 	-- KEL
     injury.setColor(sColor);
 	-- END
-	wounds.setColor(sColor);
 end
 
 function onDrop(x, y, draginfo)
