@@ -510,26 +510,20 @@ function getDefenseValue(rAttacker, rDefender, rRoll)
 	local sAttack = rRoll.sDesc;
 	
 	-- DETERMINE ATTACK TYPE AND DEFENSE
-	local sAttackType = "M";
-	if rRoll.sType == "attack" then
-		sAttackType = ActionAttackCore.decodeRangeText(sAttack);
-	end
-	local bOpportunity = string.match(sAttack, "%[OPPORTUNITY%]");
-	local bTouch = true;
-	if rRoll.sType == "attack" then
-		bTouch = string.match(sAttack, "%[TOUCH%]");
-	end
+	local sAttackType = ActionAttackCore.decodeRangeText(sAttack);
+	local bOpportunity = sAttack:match("%[OPPORTUNITY%]");
+	local bTouch = (rRoll.sType == "attack") and (sAttack:match("%[TOUCH%]"));
 	-- KEL Putting this definition already here, was for implementing ghost armor but maybe I do not need this anymore
-	local bIncorporealAttack = string.match(sAttack, "%[INCORPOREAL%]");
+	local bIncorporealAttack = sAttack:match("%[INCORPOREAL%]");
 	-- if string.match(sAttack, "%[INCORPOREAL%]") then
 		-- bIncorporealAttack = true;
 	-- end
 	-- KEL check for uncanny dodge here not needed, but maybe a security check?
-	local bFlatFooted = string.match(sAttack, "%[FF%]");
-	local nCover = tonumber(string.match(sAttack, "%[COVER %-(%d)%]")) or 0;
-	local bConceal = string.match(sAttack, "%[CONCEAL%]");
-	local bTotalConceal = string.match(sAttack, "%[TOTAL CONC%]");
-	local bAttackerBlinded = string.match(sAttack, "%[BLINDED%]");
+	local bFlatFooted = sAttack:match("%[FF%]");
+	local nCover = tonumber(sAttack:match("%[COVER %-(%d)%]")) or 0;
+	local bConceal = sAttack:match("%[CONCEAL%]");
+	local bTotalConceal = sAttack:match("%[TOTAL CONC%]");
+	local bAttackerBlinded = sAttack:match("%[BLINDED%]");
 
 	-- Determine the defense database node name
 	local nDefense = 10;

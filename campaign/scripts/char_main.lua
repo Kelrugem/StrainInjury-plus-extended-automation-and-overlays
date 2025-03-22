@@ -18,7 +18,8 @@ function onLockModeChanged(bReadOnly)
 	local tFieldsAbility = { "strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma", };
 	local tFieldsAbilityBonus = { "strengthbonus", "dexteritybonus", "constitutionbonus", "intelligencebonus", "wisdombonus", "charismabonus", };
 	local tFieldsAbilityDamage = { "strengthdamage", "dexteritydamage", "constitutiondamage", "intelligencedamage", "wisdomdamage", "charismadamage", };
-	local tFieldsHealth = { "hp", "wounds", "hptemp", "nonlethal", };
+	local tFieldsHealth = { "hp", };
+	--local tFieldsHealth = { "wounds", "hptemp", "nonlethal", };
 	local tFieldsOther = { "speedfinal", "speedspecial", "senses", };
 
 	WindowManager.callSafeControlsSetLockMode(self, tFieldsAbility, bReadOnly);
