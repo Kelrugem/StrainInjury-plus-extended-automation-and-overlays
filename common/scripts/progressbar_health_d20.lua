@@ -40,42 +40,42 @@ end
 
 function addHandlers()
 	if sMaxHealthNodePath then
-		DB.addHandler(sMaxHealthNodePath, "onUpdate", onMaxChanged);
+		DB.addHandler(sMaxHealthNodePath, "onUpdate", self.onMaxChanged);
 	end
 	if sTempHealthNodePath then
-		DB.addHandler(sTempHealthNodePath, "onUpdate", onTempChanged);
+		DB.addHandler(sTempHealthNodePath, "onUpdate", self.onTempChanged);
 	end
 	if sWoundNodePath then
-		DB.addHandler(sWoundNodePath, "onUpdate", onWoundChanged);
+		DB.addHandler(sWoundNodePath, "onUpdate", self.onWoundChanged);
 	end
 	if sNonlethalWoundNodePath then
-		DB.addHandler(sNonlethalWoundNodePath, "onUpdate", onNonlethalChanged);
+		DB.addHandler(sNonlethalWoundNodePath, "onUpdate", self.onNonlethalChanged);
 	end
 
-	OptionsManager.registerCallback("BARC", update);
-	OptionsManager.registerCallback("WNDC", update);
+	OptionsManager.registerCallback("BARC", self.update);
+	OptionsManager.registerCallback("WNDC", self.update);
 	if not Session.IsHost then
-		OptionsManager.registerCallback("SHPC", update);
+		OptionsManager.registerCallback("SHPC", self.update);
 	end
 end
 function removeHandlers()
 	if sMaxHealthNodePath then
-		DB.removeHandler(sMaxHealthNodePath, "onUpdate", onMaxChanged);
+		DB.removeHandler(sMaxHealthNodePath, "onUpdate", self.onMaxChanged);
 	end
 	if sTempHealthNodePath then
-		DB.removeHandler(sTempHealthNodePath, "onUpdate", onTempChanged);
+		DB.removeHandler(sTempHealthNodePath, "onUpdate", self.onTempChanged);
 	end
 	if sWoundNodePath then
-		DB.removeHandler(sWoundNodePath, "onUpdate", onWoundChanged);
+		DB.removeHandler(sWoundNodePath, "onUpdate", self.onWoundChanged);
 	end
 	if sNonlethalWoundNodePath then
-		DB.removeHandler(sNonlethalWoundNodePath, "onUpdate", onNonlethalChanged);
+		DB.removeHandler(sNonlethalWoundNodePath, "onUpdate", self.onNonlethalChanged);
 	end
 
-	OptionsManager.unregisterCallback("BARC", update);
-	OptionsManager.unregisterCallback("WNDC", update);
+	OptionsManager.unregisterCallback("BARC", self.update);
+	OptionsManager.unregisterCallback("WNDC", self.update);
 	if not Session.IsHost then
-		OptionsManager.unregisterCallback("SHPC", update);
+		OptionsManager.unregisterCallback("SHPC", self.update);
 	end
 end
 
