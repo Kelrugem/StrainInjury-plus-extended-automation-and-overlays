@@ -113,7 +113,7 @@ end
 function onLiveHP()
 	if CompManagerAC and CompManagerAC.EXTENSIONS["FG-PFRPG-Live-Hitpoints"] then
 		button_health.setVisible(true);
-		button_health.setAnchor("left", "wounds", "right", "absolute", 60);
+		button_health.setAnchor("left", "wounds", "right", "relative", 60);
 		livehitpoints.setVisible(false);
 	end
 end
@@ -151,7 +151,9 @@ function onDrainPermanentBonus()
 end
 
 function onMaladyTracker()
-	if CompManagerAC and CompManagerAC.EXTENSIONS["FG-PFRPG-Malady-Tracker"] then
-		pc_diseases.setAnchor("left", "leftanchor", "right", "relative", 5);
+	if CompManagerAC and CompManagerAC.EXTENSIONS["FG-PFRPG-Malady-Tracker"] and CompManagerAC.EXTENSIONS["FG-PFRPG-Live-Hitpoints"] then
+		pc_diseases.setAnchor("left", "wounds", "right", "relative");
+	elseif CompManagerAC and CompManagerAC.EXTENSIONS["FG-PFRPG-Malady-Tracker"] then
+		pc_diseases.setAnchor("left", "wounds", "right", "relative", 60);
 	end
 end
