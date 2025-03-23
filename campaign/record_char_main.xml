@@ -10,13 +10,15 @@
 		<script file="campaign/scripts/char_main.lua" />
 		<sheetdata>
 			<number_charwounds name="wounds" source="hp.wounds">
+				<!-- <anchored to="hpframe" position="insidetopright" offset="120,27" width="40" height="28" /> -->
 				<description textres="char_tooltip_strain" />
 			</number_charwounds>
 			<label_fieldtop name="wounds_label">
+				<!-- <anchored to="wounds" /> -->
 				<static textres="char_label_strain" />
 			</label_fieldtop>
             <number_charinjury name="injury" source="hp.injury" insertbefore="dr">
-				<anchored to="wounds" position="right" offset="20,0" width="40" />
+				<anchored to="wounds" position="right" offset="20,0" width="36" />
                 <description textres="char_tooltip_injury" />
 			</number_charinjury>
             <label_fieldtop name="injury_label" insertbefore="dr">
