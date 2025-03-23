@@ -9,6 +9,12 @@ function onInit()
 	self.onLockModeChanged(WindowManager.getWindowReadOnlyState(self));
 
 	DB.addHandler(DB.getPath(getDatabaseNode(), "classes"), "onChildUpdate", self.onLevelChanged);
+	
+	-- KEL
+	onLiveHP();
+	onDrainPermanentBonus();
+	onMaladyTracker();
+	-- END
 end
 function onClose()
 	DB.removeHandler(DB.getPath(getDatabaseNode(), "classes"), "onChildUpdate", self.onLevelChanged);
@@ -75,7 +81,20 @@ end
 
 function onHealthChanged()
 	local sColor = ActorManager35E.getPCSheetWoundColor(getDatabaseNode());
+	
+	-- KEL Compatibility with Advanced Charsheet and Live Hitpoints
+	if CompManagerAC and CompManagerAC.EXTENSIONS["FG-PFRPG-Live-Hitpoints"] then
+		local nodeChar = getDatabaseNode();
+		local nHPMax = DB.getValue(nodeChar, "livehp.total", 0);
+		local nHPWounds = DB.getValue(nodeChar, "hp.wounds", 0);
+		local nHPInjury = DB.getValue(nodeActor, "hp.injury", 0);
+		local nHPCurrent = nHPMax - nHPWounds - nHPInjury;
+		DB.setValue(nodeChar, "hp.current", "number", nHPCurrent);
+	end
+	--END
+	
 	wounds.setColor(sColor);
+	
 	-- KEL
     injury.setColor(sColor);
 	-- END
@@ -88,5 +107,51 @@ function onDrop(x, y, draginfo)
 			CharManager.addInfoDB(getDatabaseNode(), sClass, sRecord);
 			return true;
 		end
+	end
+end
+
+function onLiveHP()
+	if CompManagerAC and CompManagerAC.EXTENSIONS["FG-PFRPG-Live-Hitpoints"] then
+		button_health.setVisible(true);
+		button_health.setAnchor("left", "wounds", "right", "absolute", 60);
+		livehitpoints.setVisible(false);
+	end
+end
+
+function onDrainPermanentBonus()
+	if CompManagerAC and CompManagerAC.EXTENSIONS["FG-PFRPG-Drain-and-Permanent-Bonuses"] then
+		abilityframe.setStaticBounds(0,0,245,244);
+		hpframe.setStaticBounds(246,0,-1,180);
+		initframe.setStaticBounds(246,180,71,64);
+		acframe.setStaticBounds(317,180,-1,64);
+		combatframe.setStaticBounds(0,244,245,64);
+		saveframe.setStaticBounds(0,308,245,64);
+		babframe.setStaticBounds(246,244,71,64);
+		srframe.setStaticBounds(246,308,71,64);
+		sensesframe.setStaticBounds(317,308,-1,64);
+		speedframe.setStaticBounds(317,244,-1,64);
+
+		strength_label.setValue(Interface.getString("str"));
+		dexterity_label.setValue(Interface.getString("dex"));
+		constitution_label.setValue(Interface.getString("con"));
+		intelligence_label.setValue(Interface.getString("int"));
+		wisdom_label.setValue(Interface.getString("wis"));
+		charisma_label.setValue(Interface.getString("cha"));
+
+		strength_label.setAnchoredWidth(70);
+		dexterity_label.setAnchoredWidth(70);
+		constitution_label.setAnchoredWidth(70);
+		intelligence_label.setAnchoredWidth(70);
+		wisdom_label.setAnchoredWidth(70);
+		charisma_label.setAnchoredWidth(70);
+
+		strength.setAnchor("left", "", "left", "", 64);
+		-- speedfinal.setAnchor("left", "ac", "left", "", -30)
+	end
+end
+
+function onMaladyTracker()
+	if CompManagerAC and CompManagerAC.EXTENSIONS["FG-PFRPG-Malady-Tracker"] then
+		pc_diseases.setAnchor("left", "leftanchor", "right", "relative", 5);
 	end
 end
