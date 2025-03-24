@@ -43,6 +43,11 @@ function onLockModeChanged(bReadOnly)
 		local tFieldsTop = { "race", };
 		local tFieldsCombat = { "initiative", "meleemainattackbonus", "rangedmainattackbonus", "grappleattackbonus", }
 		local tFieldsDefense = { "dr", "ac", "spellresistance", "fortitude", "reflex", "will", };
+		if CompManagerAC then
+			table.insert(tFieldsDefense, "resistances");
+			table.insert(tFieldsDefense, "immunities1");
+			table.insert(tFieldsDefense, "immunities2");
+		end
 		WindowManager.callSafeControlsSetLockMode(self, tFieldsTop, bReadOnly);
 		WindowManager.callSafeControlsSetLockMode(self, tFieldsCombat, bReadOnly);
 		WindowManager.callSafeControlsSetLockMode(self, tFieldsDefense, bReadOnly);
