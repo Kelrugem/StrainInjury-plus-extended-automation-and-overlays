@@ -14,7 +14,7 @@
 		</ruleset>
 		<loadorder>36</loadorder>
 	</properties>
-	<announcement text="Strain and Injury HP Variant Rules, dated at 22 March 2025, and more for 3.5E and PFRPG rulesets, v. 4.6.6. Copyright 2025 Smiteworks.\rBy darrenan, mr900rr, phixation, tahl_liadon, bmos, DCrumb, RabidPaladin, SoxMax, Cristmo, rhagelstrom, rogervinc, mattekure and Kelrugem." icon="DeekinMightyBard" font="emotefont" />
+	<announcement text="Strain and Injury HP Variant Rules, dated at 21 April 2025, and more for 3.5E and PFRPG rulesets, v. 4.6.6. Copyright 2025 Smiteworks.\rBy darrenan, mr900rr, phixation, tahl_liadon, bmos, DCrumb, RabidPaladin, SoxMax, Cristmo, rhagelstrom, rogervinc, mattekure and Kelrugem." icon="DeekinMightyBard" font="emotefont" />
 	<base>
 		<icon name="DeekinMightyBard" file="DeekinMightyBard.jpg" />
 		<!-- Graphics -->
@@ -56,6 +56,7 @@
 
 		<!-- High-level scripts -->
 		<script name="ActionsManagerKel" file="scripts/manager_actions.lua" />
+		<script name="CharManagerKel" file="scripts/manager_char.lua" />
 		<script name="CombatManagerKel" file="scripts/manager_combat.lua" />
 		<script name="CombatRecordManagerKel" file="scripts/manager_combat_record.lua" />
 		<script name="OptionsInit" file="scripts/data_options_init.lua" />
