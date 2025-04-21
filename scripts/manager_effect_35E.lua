@@ -1177,7 +1177,7 @@ function checkTagConditional(aConditions, rEffectSpell)
 	return false;
 end
 
--- KEL RM RANGE
+-- KEL RM RANGE (thanks :)) 
 function checkRangeConditional(source, sEffect, target)
 	if not source or not target then
 		return false;
