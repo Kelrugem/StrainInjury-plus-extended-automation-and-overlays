@@ -2104,9 +2104,10 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 	local bPFMode = DataCommon.isPFRPG();
 
 	local bRemoveTarget = false;
-	-- KEL defining reverted rolls
+	-- KEL defining reverted and lifestealing rolls
 	local rRollHeal = {};
 	local rRollDamage = {};
+	local rRollSteal = {};
 	-- END
 	-- Get health fields
 	local sTargetNodeType, nodeTarget = ActorManager.getTypeAndNode(rTarget);
@@ -2140,9 +2141,9 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 
 	-- Healing
 	if rDamageOutput.sType == "heal" or rDamageOutput.sType == "fheal" then
-		-- KEL REVERT
+		-- KEL REVERT; lifestealing should not get reverted
 		local nHealAmount = rDamageOutput.nVal;
-		if rDamageOutput.sType == "heal" and not sDamage:match("%[REV%]") then
+		if rDamageOutput.sType == "heal" and not sDamage:match("%[REV%]") and not sDamage:match("%[STEAL%]") then
 			local aRevert = EffectManager35E.getEffectsBonusByType(rTarget, "REVERT", false, {}, rSource, false, tags);
 			if aRevert["revheal"] or aRevert["all"] then
 				rRollHeal.sType = "damage";
@@ -2269,6 +2270,17 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 		end
 		-- END
 		local nAdjustedDamage = rDamageOutput.nVal + nDamageAdjust;
+		-- KEL adding lifestealing as first tag property
+		if EffectManager35E.checkTagConditional({"lifestealing"}, tags) then
+			rRollSteal.sType = "heal";
+			rRollSteal.aDice = {nil, {result = 0}};
+			rRollSteal.nMod = nAdjustedDamage;
+			rRollSteal.sDesc = "[HEAL] [STEAL] Lifestealing";
+			rRollSteal.clauses = { dice = { }, dmgtype = "", modifier = nAdjustedDamage };
+			rRollSteal.tags = tags;
+			ActionHeal.encodeHealClauses(rRollSteal);
+		end
+		-- END
 		-- KEL adding revert. If revert leads to negative damage, then apply heal instead
 		if nRevert > 0 then
 			rRollDamage.sType = "heal";
@@ -2480,9 +2492,12 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 	-- Output results
 	ActionDamage.messageDamage(rSource, rTarget, bSecret, rDamageOutput.sTypeOutput, sDamage, rDamageOutput.sVal, table.concat(rDamageOutput.tNotifications, " "));
 
-	-- KEL rolling reverted rolls; important due to DB readings of the HP: Put this to the end here
+	-- KEL rolling reverted lifesteal rolls; important due to DB readings of the HP: Put this to the end here
 	if rRollHeal.nMod and ( rRollHeal.nMod > 0 ) then
 		ActionDamage.onDamage(rSource, rTarget, rRollHeal);
+	end
+	if rRollSteal.nMod and ( rRollSteal.nMod > 0 ) then
+		ActionDamage.onDamage(rSource, rSource, rRollSteal);
 	end
 	if rRollDamage.nMod and ( rRollDamage.nMod > 0 ) then
 		ActionDamage.onDamage(rSource, rTarget, rRollDamage);
