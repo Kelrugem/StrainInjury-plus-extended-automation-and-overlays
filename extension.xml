@@ -3,8 +3,8 @@
 <root version="3.0">
 	<properties>
 		<name>Feature: StrainInjury plus extended automation and overlays</name>
-		<version>4.6.6</version>
-		<author>rhythmist, mr900rr, darrenan, tahl_liadon, bmos, DCrumb, RabidPaladin, SoxMax, Cristmo, rhagelstrom, rogervinc, mattekure and Kelrugem</author>
+		<version>4.7.0</version>
+		<author>rhythmist, mr900rr, darrenan, tahl_liadon, bmos, DCrumb, RabidPaladin, SoxMax, Cristmo, rhagelstrom, rogervinc, mattekure, rmilmine, and Kelrugem</author>
 		<description>Adds support for the Strain and Injury HP Variant rules and more to the 3.5E and PFRPG rulesets.</description>
 		<ruleset>
 		  <name>3.5E</name>
@@ -14,7 +14,7 @@
 		</ruleset>
 		<loadorder>36</loadorder>
 	</properties>
-	<announcement text="Strain and Injury HP Variant Rules, dated at 21 April 2025, and more for 3.5E and PFRPG rulesets, v. 4.6.6. Copyright 2025 Smiteworks.\rBy darrenan, mr900rr, phixation, tahl_liadon, bmos, DCrumb, RabidPaladin, SoxMax, Cristmo, rhagelstrom, rogervinc, mattekure and Kelrugem." icon="DeekinMightyBard" font="emotefont" />
+	<announcement text="Strain and Injury HP Variant Rules, dated at 27 April 2025, and more for 3.5E and PFRPG rulesets, v. 4.7.0. Copyright 2025 Smiteworks.\rBy darrenan, mr900rr, phixation, tahl_liadon, bmos, DCrumb, RabidPaladin, SoxMax, Cristmo, rhagelstrom, rogervinc, mattekure and Kelrugem." icon="DeekinMightyBard" font="emotefont" />
 	<base>
 		<icon name="DeekinMightyBard" file="DeekinMightyBard.jpg" />
 		<!-- Graphics -->
