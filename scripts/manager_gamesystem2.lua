@@ -66,23 +66,22 @@ function performConcentrationCheck(draginfo, rActor, nodeSpellClass)
 		local sSkill = "Concentration";
 		local nValue = 0;
 
-		local sNodeType, nodeActor = ActorManager.getTypeAndNode(rActor);
-		if not nodeActor then
-			return;
-		end
-		if sNodeType == "pc" then
+		if ActorManager.isPC(rActor) then
 			nValue = CharManager.getSkillValue(rActor, sSkill);
 		elseif ActorManager.isRecordType(rActor, "npc") then
-			local sSkills = DB.getValue(nodeActor, "skills", "");
-			local aSkillClauses = StringManager.split(sSkills, ",;\r", true);
-			for i = 1, #aSkillClauses do
-				local nStarts, nEnds, sLabel, sSign, sMod = string.find(aSkillClauses[i], "([%w%s%(%)]*[%w%(%)]+)%s*([%+%-]?)(%d*)");
-				if nStarts and string.lower(sSkill) == string.lower(sLabel) and sMod ~= "" then
-					nValue = tonumber(sMod) or 0;
-					if sSign == "-" or sSign == "–" then
-						nValue = 0 - nValue;
+			local nodeActor = ActorManager.getCreatureNode(rActor);
+			if nodeActor then
+				local sSkills = DB.getValue(nodeActor, "skills", "");
+				local aSkillClauses = StringManager.split(sSkills, ",;\r\n", true);
+				for i = 1, #aSkillClauses do
+					local nStarts, nEnds, sLabel, sSign, sMod = string.find(aSkillClauses[i], "([%w%s%(%)]*[%w%(%)]+)%s*([%+%-–]?)(%d*)");
+					if nStarts and string.lower(sSkill) == string.lower(sLabel) and sMod ~= "" then
+						nValue = tonumber(sMod) or 0;
+						if sSign == "-" or sSign == "–" then
+							nValue = 0 - nValue;
+						end
+						break;
 					end
-					break;
 				end
 			end
 		end
@@ -107,24 +106,31 @@ function getStabilizationRoll(rActor)
 		
 		local nHP = 0;
 		local nWounds = 0;
+		-- KEL
         local nInjury = 0;
-		
-		local sNodeType, nodeActor = ActorManager.getTypeAndNode(rActor);
-		if sNodeType == "pc" then
-			nHP = DB.getValue(nodeActor, "hp.total", 0);
-			nWounds = DB.getValue(nodeActor, "hp.wounds", 0);
-            nInjury = DB.getValue(nodeActor, "hp.injury", 0);
-		elseif sNodeType == "ct" then
-			nHP = DB.getValue(nodeActor, "hp", 0);
-			nWounds = DB.getValue(nodeActor, "wounds", 0);
-            nInjury = DB.getValue(nodeActor, "injury", 0);
+		-- END
+		local nodeActor = ActorManager.getCreatureNode(rActor);
+		if nodeActor then
+			if ActorManager.isPC(rActor) then
+				nHP = DB.getValue(nodeActor, "hp.total", 0);
+				nWounds = DB.getValue(nodeActor, "hp.wounds", 0);
+				-- KEL
+				nInjury = DB.getValue(nodeActor, "hp.injury", 0);
+				-- END
+			else
+				nHP = DB.getValue(nodeActor, "hp", 0);
+				nWounds = DB.getValue(nodeActor, "wounds", 0);
+				-- KEL
+				nInjury = DB.getValue(nodeActor, "injury", 0);
+				-- END
+			end
 		end
-			
+		-- KEL	
 		if nHP > 0 and nWounds + nInjury > nHP then
 			rRoll.sDesc = string.format("%s [at %+d]", rRoll.sDesc, (nHP - (nWounds + nInjury)));
 			rRoll.nMod = rRoll.nMod + (nHP - (nWounds + nInjury));
 		end
-	
+		-- END
 	else
 		rRoll.aDice = DiceRollManager.getActorDice({ "d100" }, rActor);
 		rRoll.nMod = 0;
