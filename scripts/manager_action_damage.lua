@@ -2141,10 +2141,7 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal, bImm
 	-- KEL injury
     local nInjury = 0;
 	--END
-	local sTargetNodeType, nodeTarget = ActorManager.getTypeAndNode(rTarget);
-	if not nodeTarget then
-		return;
-	end
+	
 	if ActorManager.isPC(rTarget) then
 		nTotalHP = DB.getValue(nodeTarget, "hp.total", 0);
 		nTempHP = DB.getValue(nodeTarget, "hp.temporary", 0);
