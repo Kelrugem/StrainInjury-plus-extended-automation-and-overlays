@@ -1317,7 +1317,7 @@ function getDamageAdjust(rSource, rTarget, nDamage, rDamageOutput, bImmune, bFor
 					end
 				end
 			end
-			for k,_ in pairs(aRemap) do
+			for k,v in pairs(aRemap) do
 				rDamageOutput.aDamageTypes[v] = rDamageOutput.aDamageTypes[k];
 				rDamageOutput.aDamageTypes[k] = nil;
 			end
