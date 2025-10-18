@@ -259,7 +259,7 @@ function getAbilityDamage(rActor, sAbility)
 	return 0;
 end
 
-function getAbilityScore(rActor, sAbility)
+function getAbilityScore(rActor, sAbility, nodeSpellClass)
 	if not sAbility then
 		return -1;
 	end
@@ -274,6 +274,8 @@ function getAbilityScore(rActor, sAbility)
 			return DB.getValue(nodeActor, "level", 0);
 		elseif sShort == "bab" then
 			return DB.getValue(nodeActor, "attackbonus.base", 0);
+		elseif sShort == "cl" and nodeSpellClass then
+			return DB.getValue(nodeSpellClass, "cl", 0);
 		elseif sShort == "cmb" then
 			return DB.getValue(nodeActor, "attackbonus.base", 0);
 		elseif sShort == "str" then
@@ -321,7 +323,7 @@ function getAbilityScore(rActor, sAbility)
 	return -1;
 end
 
-function getAbilityBonus(rActor, sAbility)
+function getAbilityBonus(rActor, sAbility, nodeSpellClass)
 	if not sAbility then
 		return 0;
 	end
@@ -346,7 +348,7 @@ function getAbilityBonus(rActor, sAbility)
 	end
 
 	-- GET ABILITY VALUE
-	local nStatScore = ActorManager35E.getAbilityScore(rActor, sStat);
+	local nStatScore = ActorManager35E.getAbilityScore(rActor, sStat, nodeSpellClass);
 	if nStatScore < 0 then
 		return 0;
 	end
