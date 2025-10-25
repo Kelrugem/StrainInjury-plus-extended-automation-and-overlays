@@ -298,6 +298,8 @@ function getAbilityScore(rActor, sAbility, nodeSpellClass)
 			local sBABGrp = DB.getValue(nodeActor, "babgrp", "");
 			local sBAB = sBABGrp:match("[+-]?%d+");
 			return tonumber(sBAB) or 0;
+		elseif sShort == "cl" and nodeSpellClass then
+			return DB.getValue(nodeSpellClass, "cl", 0);
 		elseif sShort == "cmb" then
 			local sBABGrp = DB.getValue(nodeActor, "babgrp", "");
 			local sBAB = sBABGrp:match("CMB ([+-]?%d+)");
