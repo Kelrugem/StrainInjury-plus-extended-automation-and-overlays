@@ -454,4 +454,6 @@ function applySave(rSource, rOrigin, rAction, sUser)
 	if rSource and rOrigin then
 		ActionDamage.setDamageState(rOrigin, rSource, StringManager.trim(sAttack), rAction.sResult);
 	end
+	
+	GameManager.callEventFunctions("onSavePostResolve", rSource, rOrigin, rAction);
 end
