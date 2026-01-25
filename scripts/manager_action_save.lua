@@ -353,7 +353,6 @@ function applySave(rSource, rOrigin, rAction, sUser)
 		sAttack = ActionCore.decodeLabelText(rAction.sSaveDesc, "action_savevs_tag");
 		bHalfMatch = (rAction.sSaveDesc:match("%[HALF ON SAVE%]") ~= nil);
 	end
-	rAction.sResult = "";
 	
 	if rAction.sResult == "autosuccess" or rAction.sResult == "success" then
 		if rAction.sResult == "autosuccess" then
