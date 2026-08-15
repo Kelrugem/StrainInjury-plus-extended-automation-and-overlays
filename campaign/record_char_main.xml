@@ -17,16 +17,16 @@
 				<!-- <anchored to="wounds" /> -->
 				<static textres="char_label_strain" />
 			</label_fieldtop>
+			<number_dropadd name="nonlethal" merge="delete" />
+			<label_fieldtop name="nonlethal_label" merge="delete" />
             <number_charinjury name="injury" source="hp.injury" insertbefore="dr">
-				<anchored to="wounds" position="right" offset="20,0" width="36" />
+				<anchored to="wounds" position="right" offset="20,0" width="40" />
                 <description textres="char_tooltip_injury" />
 			</number_charinjury>
             <label_fieldtop name="injury_label" insertbefore="dr">
                 <anchored to="injury" />
                 <static textres="char_label_injury" />
             </label_fieldtop>
-			<number_dropadd name="nonlethal" merge="delete" />
-			<label_fieldtop name="nonlethal_label" merge="delete" />
 		</sheetdata>
 	</windowclass>
 </root>

@@ -34,7 +34,7 @@ function onLockModeChanged(bReadOnly)
 	WindowManager.callSafeControlsSetLockMode(self, tFieldsHealth, bReadOnly);
 	WindowManager.callSafeControlsSetLockMode(self, tFieldsOther, bReadOnly);
 
-	if UtilityManager.getTopWindow(self).getClass() == "charsheetmini" then
+	if WindowManager.getTopWindow(self).getClass() == "charsheetmini" then
 		local tFieldsCombat = { "initiative", "melee", "ranged", "grapple", };
 		local tFieldsDefense = { "ac", "srfinal", "fortitude", "reflex", "will", };
 		WindowManager.callSafeControlsSetLockMode(self, tFieldsCombat, bReadOnly);
