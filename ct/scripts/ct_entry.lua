@@ -26,7 +26,6 @@ function linkPCFields()
 	
 	local nodeChar = link.getTargetDatabaseNode();
 	if nodeChar then
-		name.setLink(DB.createChild(nodeChar, "name", "string"), true);
 		senses.setLink(DB.createChild(nodeChar, "senses", "string"), true);
 
 		hp.setLink(DB.createChild(nodeChar, "hp.total", "number"));
