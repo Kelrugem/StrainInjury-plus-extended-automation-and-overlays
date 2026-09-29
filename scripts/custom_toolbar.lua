@@ -3,10 +3,8 @@
 -- attribution and copyright information.
 --
 
--- function onInit()
-	-- local tOverlayButtons = {"", "clear_wounds", "clear_saves"};
-	-- ToolbarManager.addList(subwindow, tOverlayButtons, "right");
--- end
+-- luacheck: globals TokenManagerKel
+-- luacheck: globals clearWounds clearSaves
 
 function onTabletopInit()
     ToolbarManager.registerButton("image_clearwounds",
@@ -25,9 +23,6 @@ function onTabletopInit()
 			bHostVisibleOnly = true,
             fnActivate = clearSaves,
         });
-		
-	-- local tOverlayButtons = {"", "clear_wounds", "clear_saves"};
-	-- ToolbarManager.addList(subwindow, tOverlayButtons, "right");
 end
 
 function clearWounds(c)	
@@ -36,7 +31,6 @@ function clearWounds(c)
 		TokenManager3.setDeathOverlay(v,0, true); 	
 	end
 	cImage.setFocus();
-	-- c.window.updateDisplay();
 end
 
 function clearSaves(c)	
