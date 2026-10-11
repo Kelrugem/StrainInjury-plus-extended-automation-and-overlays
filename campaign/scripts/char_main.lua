@@ -43,11 +43,13 @@ function onLockModeChanged(bReadOnly)
 		local tFieldsTop = { "race", };
 		local tFieldsCombat = { "initiative", "meleemainattackbonus", "rangedmainattackbonus", "grappleattackbonus", }
 		local tFieldsDefense = { "dr", "ac", "spellresistance", "fortitude", "reflex", "will", };
+		-- Kel comp with other extensions
 		if CompManagerAC then
 			table.insert(tFieldsDefense, "resistances");
 			table.insert(tFieldsDefense, "immunities1");
 			table.insert(tFieldsDefense, "immunities2");
 		end
+		--
 		WindowManager.callSafeControlsSetLockMode(self, tFieldsTop, bReadOnly);
 		WindowManager.callSafeControlsSetLockMode(self, tFieldsCombat, bReadOnly);
 		WindowManager.callSafeControlsSetLockMode(self, tFieldsDefense, bReadOnly);
@@ -59,10 +61,10 @@ function onLevelChanged()
 end
 function onSystemChanged()
 	local bPFMode = DataCommon.isPFRPG();
-	
-	cmd.setVisible(bPFMode);
-	label_cmd.setVisible(bPFMode);
-	
+
+	local tFieldsCMD = { "cmd", "label_cmd", };
+	WindowManager.callSafeControlsSetVisible(self, tFieldsCMD, bPFMode);
+
 	if label_grapple then
 		if bPFMode then
 			label_grapple.setValue(Interface.getString("cmb"));
@@ -72,16 +74,11 @@ function onSystemChanged()
 			label_grapple.setValue(Interface.getString("grapple"));
 		end
 	end
-	
-	spot.setVisible(not bPFMode);
-	label_spot.setVisible(not bPFMode);
-	listen.setVisible(not bPFMode);
-	label_listen.setVisible(not bPFMode);
-	search.setVisible(not bPFMode);
-	label_search.setVisible(not bPFMode);
 
-	perception.setVisible(bPFMode);
-	label_perception.setVisible(bPFMode);
+	local tFieldsSkills35E = { "spot", "label_spot", "listen", "label_listen", "search", "label_search", };
+	WindowManager.callSafeControlsSetVisible(self, tFieldsSkills35E, not bPFMode);
+	local tFieldsSkillsPF = { "perception", "label_perception", };
+	WindowManager.callSafeControlsSetVisible(self, tFieldsSkillsPF, bPFMode);
 end
 
 function onHealthChanged()
@@ -105,7 +102,7 @@ function onHealthChanged()
 	-- END
 end
 
-function onDrop(x, y, draginfo)
+function onDrop(_, _, draginfo)
 	if draginfo.isType("shortcut") then
 		local sClass, sRecord = draginfo.getShortcutData();
 		if StringManager.contains({"referenceclass", "referencerace"}, sClass) then
