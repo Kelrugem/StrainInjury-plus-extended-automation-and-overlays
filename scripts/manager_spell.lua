@@ -12,24 +12,22 @@ function onInit()
 	end
 end
 
--- Reset power points and individual spells cast
 -- KEL adding nomnom and short rest reset (also some change in manager_combat2 stored in _combat3)
 function resetSpells(nodeCaster)
 	for _,sSpellset in ipairs(tSpellsets) do
 		for _,nodeSpellClass in ipairs(DB.getChildList(nodeCaster, sSpellset)) do
 			DB.setValue(nodeSpellClass, "pointsused", "number", 0);
-			
+
 			for _,nodeLevel in ipairs(DB.getChildList(nodeSpellClass, "levels")) do
 				for _,nodeSpell in ipairs(DB.getChildList(nodeLevel, "spells")) do
-					local sleep = true;
-					-- KEL Beware the actions of one spell contain all actions, also damage and over casts and so on
+					-- KEL Beware the actions of one spell contain all actions, also damage and other casts and so on
+					local bSleep = true;
 					for _,nodeAction in ipairs(DB.getChildList(nodeSpell, "actions")) do
-						local resetdef = DB.getValue(nodeAction, "usereset", "");
-						if resetdef == "consumable" then
-							sleep = false;
+						if DB.getValue(nodeAction, "usereset", "") == "consumable" then
+							bSleep = false;
 						end
 					end
-					if sleep then
+					if bSleep then
 						DB.setValue(nodeSpell, "cast", "number", 0);
 					end
 				end
@@ -38,22 +36,23 @@ function resetSpells(nodeCaster)
 	end
 end
 
-function resetShortSpells(nodeCaster)
+function resetShortSpells(rActor)
+	local nodeCaster = ActorManager.getCreatureNode(rActor);
+	if not nodeCaster then
+		return;
+	end
 	for _,sSpellset in ipairs(tSpellsets) do
 		for _,nodeSpellClass in ipairs(DB.getChildList(nodeCaster, sSpellset)) do
-			-- DB.setValue(nodeSpellClass, "pointsused", "number", 0);
-			
 			for _,nodeLevel in ipairs(DB.getChildList(nodeSpellClass, "levels")) do
 				for _,nodeSpell in ipairs(DB.getChildList(nodeLevel, "spells")) do
-					local sleep = false;
 					-- KEL Beware the actions of one spell contain all actions, also damage and other casts and so on
+					local bSleep = false;
 					for _,nodeAction in ipairs(DB.getChildList(nodeSpell, "actions")) do
-						local resetdef = DB.getValue(nodeAction, "usereset", "");
-						if resetdef == "shortrest" then
-							sleep = true;
+						if DB.getValue(nodeAction, "usereset", "") == "shortrest" then
+							bSleep = true;
 						end
 					end
-					if sleep then
+					if bSleep then
 						DB.setValue(nodeSpell, "cast", "number", 0);
 					end
 				end
@@ -64,7 +63,7 @@ end
 
 -- END
 
--- Iterate through each spell to reset
+-- Iterate through each spell to reset, KEL add compatibility tSpellsets
 function resetPrepared(nodeCaster)
 	for _,sSpellset in ipairs(tSpellsets) do
 		for _,nodeSpellClass in ipairs(DB.getChildList(nodeCaster, sSpellset)) do
@@ -77,70 +76,6 @@ function resetPrepared(nodeCaster)
 	end
 end
 
-function convertSpellDescToFormattedText(nodeSpell)
-	local nodeDesc = DB.getChild(nodeSpell, "description");
-	if nodeDesc then
-		local sDescType = DB.getType(nodeDesc);
-		if sDescType == "string" then
-			local sValue = "<p>" .. DB.getValue(nodeDesc) .. "</p>";
-			sValue = sValue:gsub("\r", "</p><p>");
-
-			local nodeLinkedSpells = DB.getChild(nodeSpell, "linkedspells");
-			if nodeLinkedSpells then
-				if DB.getChildCount(nodeLinkedSpells) > 0 then
-					sValue = sValue .. "<linklist>";
-					for _,v in ipairs(DB.getChildList(nodeLinkedSpells)) do
-						local sLinkName = DB.getValue(v, "linkedname", "");
-						local sLinkClass, sLinkRecord = DB.getValue(v, "link", "", "");
-						sValue = sValue .. "<link class=\"" .. sLinkClass .. "\" recordname=\"" .. sLinkRecord .. "\">" .. sLinkName .. "</link>";
-					end
-					sValue = sValue .. "</linklist>";
-				end
-			end
-
-			DB.deleteNode(nodeDesc);
-			DB.setValue(nodeSpell, "description", "formattedtext", sValue);
-		end
-	end
-end
-
-function convertSpellDescToString(nodeSpell)
-	local nodeDesc = DB.getChild(nodeSpell, "description");
-	if nodeDesc then
-		local sDescType = DB.getType(nodeDesc);
-		if sDescType == "formattedtext" then
-			local sDesc = DB.getText(nodeDesc);
-			local sValue = DB.getValue(nodeDesc);
-
-			DB.deleteNode(nodeDesc);
-			DB.setValue(nodeSpell, "description", "string", sDesc);
-
-			local nodeLinkedSpells = DB.createChild(nodeSpell, "linkedspells");
-			if nodeLinkedSpells then
-				local nIndex = 1;
-				local nLinkStartB, nLinkStartE, sClass, sRecord = string.find(sValue, "<link class=\"([^\"]*)\" recordname=\"([^\"]*)\">", nIndex);
-				while nLinkStartB and sClass and sRecord do
-					local nLinkEndB, nLinkEndE = string.find(sValue, "</link>", nLinkStartE + 1);
-					
-					if nLinkEndB then
-						local sText = string.sub(sValue, nLinkStartE + 1, nLinkEndB - 1);
-
-						local nodeLink = DB.createChild(nodeLinkedSpells);
-						if nodeLink then
-							DB.setValue(nodeLink, "link", "windowreference", sClass, sRecord);
-							DB.setValue(nodeLink, "linkedname", "string", sText);
-						end
-						
-						nIndex = nLinkEndE + 1;
-						nLinkStartB, nLinkStartE, sClass, sRecord = string.find(sValue, "<link class=\"([^\"]*)\" recordname=\"([^\"]*)\">", nIndex);
-					else
-						nLinkStartB = nil;
-					end
-				end
-			end
-		end
-	end
-end
 
 function addSpell(nodeSource, nodeSpellClass, nLevel)
 	-- Validate
