@@ -8,7 +8,7 @@ function onInit()
 end
 
 function linkPCFields(nodePS)
-	local sClass, sRecord = DB.getValue(nodePS, "link", "", "");
+	local _,sRecord = DB.getValue(nodePS, "link", "", "");
 	if sRecord == "" then
 		return;
 	end
@@ -52,11 +52,11 @@ function linkPCFields(nodePS)
 	PartyManager.linkRecordField(nodeChar, nodePS, "ac.totals.flatfooted", "number", "flatfootedac");
 	PartyManager.linkRecordField(nodeChar, nodePS, "ac.totals.touch", "number", "touchac");
 	PartyManager.linkRecordField(nodeChar, nodePS, "ac.totals.cmd", "number", "cmd");
-	
+
 	PartyManager.linkRecordField(nodeChar, nodePS, "saves.fortitude.total", "number", "fortitude");
 	PartyManager.linkRecordField(nodeChar, nodePS, "saves.reflex.total", "number", "reflex");
 	PartyManager.linkRecordField(nodeChar, nodePS, "saves.will.total", "number", "will");
-	
+
 	PartyManager.linkRecordField(nodeChar, nodePS, "defenses.damagereduction", "string", "dr");
 	PartyManager.linkRecordField(nodeChar, nodePS, "defenses.sr.total", "number", "sr");
 

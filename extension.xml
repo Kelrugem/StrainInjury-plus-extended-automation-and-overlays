@@ -46,7 +46,7 @@
 		
 		<!-- Party sheet -->
 		<includefile source="ps/ps_main.xml" />
-		<script name="PartyManager2Kel" file="scripts/manager_ps2.lua" />
+		<script name="PartyManager2Kel" file="scripts/manager_ps_kel.lua" />
 
 		<!-- High-level scripts -->
 		<script name="ActionsManagerKel" file="scripts/manager_actions.lua" />
@@ -55,12 +55,12 @@
 		<script name="CombatRecordManagerKel" file="scripts/manager_combat_record.lua" />
 		<script name="OptionsInit" file="scripts/data_options_init.lua" />
 		<script name="DataCommon2" file="scripts/data_common2.lua" />
-		<script name="GameSystem2" file="scripts/manager_gamesystem2.lua" />
+		<script name="GameSystem2" file="scripts/manager_gamesystem_kel.lua" />
 		<script name="ActorManager35E" file="scripts/manager_actor_35E.lua" />
 		<script name="TokenManager3" file="scripts/manager_token_kel.lua" />
 		<script name="CombatManager2" file="scripts/manager_combat2.lua" />
 		<script name="EffectManager35E" file="scripts/manager_effect_35E.lua" />
-		<script name="SpellManager" file="scripts/manager_spell.lua" />
+		<script name="SpellManager" file="scripts/manager_spell_kel.lua" />
 		<script name="ActionInit" file="scripts/manager_action_init.lua" />
 		<script name="ActionAttack" file="scripts/manager_action_attack.lua" />
 		<script name="ActionDamage" file="scripts/manager_action_damage.lua" />
