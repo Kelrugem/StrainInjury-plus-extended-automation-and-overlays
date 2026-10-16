@@ -59,7 +59,6 @@
 		<script name="ActorManager35E" file="scripts/manager_actor_35E.lua" />
 		<script name="TokenManager3" file="scripts/manager_token_kel.lua" />
 		<script name="CombatManager2" file="scripts/manager_combat2.lua" />
-		<script name="EffectManager35E" file="scripts/manager_effect_35E.lua" />
 		<script name="SpellManager" file="scripts/manager_spell_kel.lua" />
 		<script name="ActionInit" file="scripts/manager_action_init.lua" />
 		<script name="ActionAttack" file="scripts/manager_action_attack.lua" />
