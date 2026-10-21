@@ -770,9 +770,9 @@ function onAttackResolve(rSource, rTarget, rRoll, rMessage)
 	
 	-- KEL Save overlay
 	if (rRoll.sResult == "miss" or rRoll.sResult == "fumble") and bAction and rRoll.sType ~= "critconfirm" then
-		TokenManager3.setSaveOverlay(ActorManager.getCTNode(rTarget), -3);
+		TokenManagerKel.setSaveOverlay(ActorManager.getCTNode(rTarget), -3);
 	elseif (rRoll.sResult == "hit" or rRoll.sResult == "crit") and bAction and rRoll.sType ~= "critconfirm" then
-		TokenManager3.setSaveOverlay(ActorManager.getCTNode(rTarget), -1);
+		TokenManagerKel.setSaveOverlay(ActorManager.getCTNode(rTarget), -1);
 	end
 	-- END
 
@@ -843,7 +843,7 @@ function onMissChance(rSource, rTarget, rRoll)
 			ActionAttack.clearCritState(rSource, rTarget);
 			-- KEL Adding Save Overlay
 			if rRoll.actionStuffForOverlay == "true" then
-				TokenManager3.setSaveOverlay(ActorManager.getCTNode(rTarget), -3);
+				TokenManagerKel.setSaveOverlay(ActorManager.getCTNode(rTarget), -3);
 			end
 			-- END
 		else
@@ -857,7 +857,7 @@ function onMissChance(rSource, rTarget, rRoll)
 			rMessage.icon = "action_attack_hit";
 			-- KEL Adding Save Overlay
 			if rRoll.actionStuffForOverlay == "true" then
-				TokenManager3.setSaveOverlay(ActorManager.getCTNode(rTarget), -1);
+				TokenManagerKel.setSaveOverlay(ActorManager.getCTNode(rTarget), -1);
 			end
 			-- END
 		else

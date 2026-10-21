@@ -77,7 +77,7 @@ function getWoundPercent(v, bNonLethalUncons)
 	end
 	if bDiesAtZero and nPercentLethal >= 1 then
 		sStatus = ActorHealthManager.STATUS_DEAD;
-		TokenManager3.setDeathOverlay(nodeCT, 1);
+		TokenManagerKel.setDeathOverlay(nodeCT, 1);
 	elseif nPercentLethal > 1 and not bNonLethalUncons then
 		local nDying = GameSystem.getDeathThreshold(rActor);
 		
@@ -85,22 +85,22 @@ function getWoundPercent(v, bNonLethalUncons)
 			sStatus = ActorHealthManager.STATUS_DYING;
 			-- KEL adding a boolean to treat NOTE 2
 			if EffectManager35E.hasEffectCondition(rActor, "Stable", "", true) then
-				TokenManager3.setDeathOverlay(nodeCT, 3);
+				TokenManagerKel.setDeathOverlay(nodeCT, 3);
 			else
-				TokenManager3.setDeathOverlay(nodeCT, 2);
+				TokenManagerKel.setDeathOverlay(nodeCT, 2);
 			end
 		else
 			sStatus = ActorHealthManager.STATUS_DEAD;
-			TokenManager3.setDeathOverlay(nodeCT, 1);
+			TokenManagerKel.setDeathOverlay(nodeCT, 1);
 		end
 	-- KEL Adding unconscious/stable effect such that stabilization will not be triggered (and removing for dying)
 	elseif nPercentNonlethal >= 1 and bNonLethalUncons then
 		sStatus = ActorHealthManager.STATUS_UNCONSCIOUS;
-		TokenManager3.setDeathOverlay(nodeCT, 9);
+		TokenManagerKel.setDeathOverlay(nodeCT, 9);
 		applyStableEffect(rActor);
 	elseif nPercentLethal == 1 then
 		sStatus = ActorHealthManager.STATUS_DISABLED;
-		TokenManager3.setDeathOverlay(nodeCT, 8);
+		TokenManagerKel.setDeathOverlay(nodeCT, 8);
 	-- KEL we keep the following structure instead of replacing with ActorHealthManager.getDefaultStatusFromWoundPercent; maybe replace the value of the deathNode with the status string, then this code could be more elegant. Our approach however is a biiiiit better since it has one less if-clause (and a number for deathNode may be better in sense of bytes)
 	elseif nPercentNonlethal > 0 then
 		local bDetailedStatus = OptionsManager.isOption("WNDC", "detailed");
@@ -108,29 +108,29 @@ function getWoundPercent(v, bNonLethalUncons)
 		if bDetailedStatus then
 			if nPercentNonlethal >= .75 then
 				sStatus = ActorHealthManager.STATUS_CRITICAL;
-				TokenManager3.setDeathOverlay(nodeCT, 4);
+				TokenManagerKel.setDeathOverlay(nodeCT, 4);
 			elseif nPercentNonlethal >= .5 then
 				sStatus = ActorHealthManager.STATUS_HEAVY;
-				TokenManager3.setDeathOverlay(nodeCT, 5);
+				TokenManagerKel.setDeathOverlay(nodeCT, 5);
 			elseif nPercentNonlethal >= .25 then
 				sStatus = ActorHealthManager.STATUS_MODERATE;
-				TokenManager3.setDeathOverlay(nodeCT, 6);
+				TokenManagerKel.setDeathOverlay(nodeCT, 6);
 			else
 				sStatus = ActorHealthManager.STATUS_LIGHT;
-				TokenManager3.setDeathOverlay(nodeCT, 7);
+				TokenManagerKel.setDeathOverlay(nodeCT, 7);
 			end
 		else
 			if nPercentNonlethal >= .5 then
 				sStatus = ActorHealthManager.STATUS_SIMPLE_HEAVY;
-				TokenManager3.setDeathOverlay(nodeCT, 5);
+				TokenManagerKel.setDeathOverlay(nodeCT, 5);
 			else
 				sStatus = ActorHealthManager.STATUS_SIMPLE_WOUNDED;
-				TokenManager3.setDeathOverlay(nodeCT, 7);
+				TokenManagerKel.setDeathOverlay(nodeCT, 7);
 			end
 		end
 	else
 		sStatus = ActorHealthManager.STATUS_HEALTHY;
-		TokenManager3.setDeathOverlay(nodeCT, 0);
+		TokenManagerKel.setDeathOverlay(nodeCT, 0);
 	end
 	
 	return nPercentNonlethal, sStatus, nPercentLethal;

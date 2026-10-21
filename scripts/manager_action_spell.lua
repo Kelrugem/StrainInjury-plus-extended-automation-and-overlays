@@ -282,7 +282,7 @@ function onSpellCast(rSource, rTarget, rRoll)
 		if spellImmunity then
 			rMessage.text = rMessage.text .. " [IMMUNE]";
 			rMessage.icon = "spell_fail";
-			TokenManager3.setSaveOverlay(ActorManager.getCTNode(rTarget), -3);
+			TokenManagerKel.setSaveOverlay(ActorManager.getCTNode(rTarget), -3);
 			if rSource then
 				local bRemoveTargetanders = false;
 				if OptionsManager.isOption("RMMT", "on") then
@@ -296,7 +296,7 @@ function onSpellCast(rSource, rTarget, rRoll)
 				end
 			end
 		else
-			TokenManager3.setSaveOverlay(ActorManager.getCTNode(rTarget), -1);
+			TokenManagerKel.setSaveOverlay(ActorManager.getCTNode(rTarget), -1);
 		end
 		-- END
 	end
@@ -363,10 +363,10 @@ function onCLC(rSource, rTarget, rRoll)
 			if nSR > 0 then
 				if nTotal >= nSR then
 					rMessage.text = rMessage.text .. " [SUCCESS]";
-					TokenManager3.setSaveOverlay(ActorManager.getCTNode(rTarget), -1);
+					TokenManagerKel.setSaveOverlay(ActorManager.getCTNode(rTarget), -1);
 				else
 					rMessage.text = rMessage.text .. " [FAILURE]";
-					TokenManager3.setSaveOverlay(ActorManager.getCTNode(rTarget), -3);
+					TokenManagerKel.setSaveOverlay(ActorManager.getCTNode(rTarget), -3);
 					if rSource then
 						local bRemoveTarget = false;
 						if OptionsManager.isOption("RMMT", "on") then

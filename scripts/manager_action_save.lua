@@ -400,9 +400,9 @@ function applySave(rSource, rOrigin, rAction, sUser)
 			
 			-- KEL Add partial image and success overlay
 			if bHalfMatch and not bAvoidDamage then
-				TokenManager3.setSaveOverlay(ActorManager.getCTNode(rSource), -2);
+				TokenManagerKel.setSaveOverlay(ActorManager.getCTNode(rSource), -2);
 			else
-				TokenManager3.setSaveOverlay(ActorManager.getCTNode(rSource), -3);
+				TokenManagerKel.setSaveOverlay(ActorManager.getCTNode(rSource), -3);
 			end
 			-- END
 			
@@ -439,10 +439,10 @@ function applySave(rSource, rOrigin, rAction, sUser)
 			-- KEL adding overlays
 			if bHalfDamage then
 				rAction.sResult = "half_failure";
-				TokenManager3.setSaveOverlay(ActorManager.getCTNode(rSource), -2);
+				TokenManagerKel.setSaveOverlay(ActorManager.getCTNode(rSource), -2);
 			else
 				rAction.sResult = "failure";
-				TokenManager3.setSaveOverlay(ActorManager.getCTNode(rSource), -1);
+				TokenManagerKel.setSaveOverlay(ActorManager.getCTNode(rSource), -1);
 			end
 			-- END
 		end

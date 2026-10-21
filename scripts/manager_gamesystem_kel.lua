@@ -7,7 +7,7 @@
 
 function onInit()
 	-- GameSystem.actions["fortification"] = { };
-	GameSystem.getStabilizationRoll = GameSystem2.getStabilizationRoll;
+	GameSystem.getStabilizationRoll = getStabilizationRoll;
 	ModifierManager.addModWindowPresets({ { sCategory = "general", tPresets = { "ADV", "DISADV" } } });
 	ModifierManager.addKeyExclusionSets({ { "ADV", "DISADV" } });
 end
