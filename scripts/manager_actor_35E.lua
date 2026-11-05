@@ -5,17 +5,6 @@
 
 function onInit()
 	initActorHealth();
-	-- Add Extended AC Bonuses (https://github.com/FG-Unofficial-Developers-Guild/FG-PFRPG-ExtendedACBonusTypes)
-	DataCommon.actypes["naturalsize"] = "naturalsize";
-	DataCommon.actypes["armorenhancement"] = "armorenhancement";
-	DataCommon.actypes["shieldenhancement"] = "shieldenhancement";
-	DataCommon.actypes["naturalenhancement"] = "naturalenhancement";
-
-	-- Add Extended AC Bonuses (https://github.com/FG-Unofficial-Developers-Guild/FG-PFRPG-ExtendedACBonusTypes)
-	table.insert(DataCommon.bonustypes, "naturalsize");
-	table.insert(DataCommon.bonustypes, "armorenhancement");
-	table.insert(DataCommon.bonustypes, "shieldenhancement");
-	table.insert(DataCommon.bonustypes, "naturalenhancement");
 end
 
 --
@@ -23,11 +12,7 @@ end
 -- 
 
 function initActorHealth()
-	ActorHealthManager.registerStatusHealthColor(ActorHealthManager.STATUS_UNCONSCIOUS, ColorManager.getUIColor("health_dyingordead"));
-	ActorHealthManager.registerStatusHealthColor(ActorHealthManager.STATUS_DISABLED, ColorManager.getUIColor("health_simple_bloodied"));
-	ActorHealthManager.registerStatusHealthColor(ActorHealthManager.STATUS_STAGGERED, ColorManager.getUIColor("health_simple_bloodied"));
-
-	ActorHealthManager.getWoundPercent = getWoundPercent;
+	GameManager.setFunction("onActorGetHealthStatus", getWoundPercent);
 end
 
 -- NOTE: Always default to using CT node as primary to make sure 
@@ -38,29 +23,11 @@ end
 -- 		as it will cause endless loop with conditionals that check health
 
 -- KEL adding variable for unconscious treatment etc. (yeah, I know that it has a typo.. :P), measuring whether damage is nonlethal.
-function getWoundPercent(v, bNonLethalUncons)
-	local rActor = ActorManager.resolveActor(v);
-
-	local nHP = 0;
-	local nTemp = 0;
-	local nWounds = 0;
-    local nInjury = 0;
-	
-	local nodeCT = ActorManager.getCTNode(rActor);
-	if nodeCT then
-		nHP = math.max(DB.getValue(nodeCT, "hp", 0), 0);
-		nTemp = math.max(DB.getValue(nodeCT, "hptemp", 0), 0);
-		nWounds = math.max(DB.getValue(nodeCT, "wounds", 0), 0);
-        nInjury = math.max(DB.getValue(nodeCT, "injury", 0), 0);
-	elseif ActorManager.isPC(rActor) then
-		local nodePC = ActorManager.getCreatureNode(rActor);
-		if nodePC then
-			nHP = math.max(DB.getValue(nodePC, "hp.total", 0), 0);
-			nTemp = math.max(DB.getValue(nodePC, "hp.temporary", 0), 0);
-			nWounds = math.max(DB.getValue(nodePC, "hp.wounds", 0), 0);
-			nInjury = math.max(DB.getValue(nodePC, "hp.injury", 0), 0);
-		end
-	end
+function getWoundPercent(rActor, bNonLethalUncons)
+	local nHP = GameManager.getRecordFieldValueLinked(rActor, "hptotal", 0);
+	local nTemp = GameManager.getRecordFieldValueLinked(rActor, "hptemp", 0);
+	local nWounds = GameManager.getRecordFieldValueLinked(rActor, "wounds", 0);
+	local nInjury = GameManager.getRecordFieldValueLinked(rActor, "injury", 0);
 	
 	local nPercentLethal = 0;
 	local nPercentNonlethal = 0;
@@ -84,7 +51,7 @@ function getWoundPercent(v, bNonLethalUncons)
 		if ((nWounds + nInjury) - nHP) < nDying then
 			sStatus = ActorHealthManager.STATUS_DYING;
 			-- KEL adding a boolean to treat NOTE 2
-			if EffectManager35E.hasEffectCondition(rActor, "Stable", "", true) then
+			if EffectManager.hasText(rActor, "Stable", { bSkipConditionals = true, }) then
 				TokenManagerKel.setDeathOverlay(nodeCT, 3);
 			else
 				TokenManagerKel.setDeathOverlay(nodeCT, 2);
